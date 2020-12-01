@@ -1,0 +1,27 @@
+name: ${project.name}
+version: ${project.version}
+main: com.popupmc.areaSpawner.AreaSpawner
+api-version: "1.13"
+authors: [lelesape]
+description: ${project.description}
+website: http://bit.ly/2mwvHWN
+
+commands:
+  areaSpawner:
+    description: Main command for AreaSpawner
+    aliases: [as]
+    usage: /command help|version|reload
+
+permissions:
+  areaSpawner.version:
+    description: Allows you to check the plugins version
+    default: op
+  areaSpawner.reload:
+    description: Allows you to reload the plugin
+    default: op
+  areaSpawner.*:
+    description: Gives access to every permission available
+    default: op
+    children:
+      areaSpawner.version: true
+      areaSpawner.reload: true

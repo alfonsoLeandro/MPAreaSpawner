@@ -1,0 +1,60 @@
+config:
+  prefix: '&f[&eMPAreaSpawner&f]'
+  # Whether to show debug messages in console or not. Example of debug message: "generating safe spawn locations for world1"
+  debug: true
+  # Random spawn settings
+  random spawn:
+    world:
+      min x: -10_000_000
+      max x: 10_000_000
+      min z: -10_000_000
+      max z: 10_000_000
+    nether:
+      min x: -10_000_000
+      max x: 10_000_000
+      min z: -10_000_000
+      max z: 10_000_000
+  no spawn:
+    world:
+      enabled: true
+      min x: -8_000_000
+      max x: 8_000_000
+      min z: -8_000_000
+      max z: 8_000_000
+  cache:
+    # Number of spawns to calculate and save in the cache per world.
+    spawns: 10
+  blocks:
+    blacklist:
+      enabled: true
+      list:
+        - 'BEDROCK'
+        - 'OAK_LEAVES'
+        - 'PLANKS'
+        - 'SAPLING'
+        - 'TNT'
+        - 'STONE_PRESSURE_PLATE'
+        - 'WOODEN_PRESSURE_PLATE'
+        - 'LIGHT_WEIGHTED_PRESSURE_PLATE'
+        - 'HEAVY_WEIGHTED_PRESSURE_PLATE'
+        - 'LAVA'
+        - 'WATER'
+        - 'BED'
+        - 'WEB'
+        - 'GRASS'
+        - 'TORCH'
+        - 'REDSTONE_BLOCK'
+        - 'CHEST'
+        - 'WHEAT'
+        - 'FURNACE'
+        - 'FIRE'
+        - 'REDSTONE'
+        - 'CACTUS'
+        - 'OBSIDIAN'
+        - 'PORTAL'
+        - 'ENCHANTING TABLE'
+    whitelist:
+      # Are block that aren't found in the whitelist safe?
+      non-whitelist are safe: true
+      list:
+        - 'GRASS'
