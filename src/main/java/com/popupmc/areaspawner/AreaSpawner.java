@@ -1,31 +1,23 @@
 /*
-MIT License
+Copyright 2020 Leandro Alfonso
 
-Copyright (c) 2020 Leandro Alfonso
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+    http://www.apache.org/licenses/LICENSE-2.0
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
  */
-package com.popupmc.areaSpawner;
+package com.popupmc.areaspawner;
 
-import com.popupmc.areaSpawner.commands.MainCommand;
-import com.popupmc.areaSpawner.utils.RandomSpawnCache;
-import com.popupmc.areaSpawner.utils.YamlFile;
+import com.popupmc.areaspawner.commands.MainCommand;
+import com.popupmc.areaspawner.spawn.RandomSpawnCache;
+import com.popupmc.areaspawner.utils.YamlFile;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
@@ -34,6 +26,11 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * AreaSpawner main class. In charge of registering any plugin-server interaction.
+ *
+ * @author lelesape
+ */
 public final class AreaSpawner extends JavaPlugin {
 
     final private PluginDescriptionFile pdfFile = getDescription();

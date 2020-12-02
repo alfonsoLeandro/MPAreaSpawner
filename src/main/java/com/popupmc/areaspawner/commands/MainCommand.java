@@ -1,30 +1,22 @@
 /*
-MIT License
+Copyright 2020 Leandro Alfonso
 
-Copyright (c) 2020 Leandro Alfonso
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+    http://www.apache.org/licenses/LICENSE-2.0
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
  */
-package com.popupmc.areaSpawner.commands;
+package com.popupmc.areaspawner.commands;
 
-import com.popupmc.areaSpawner.AreaSpawner;
-import com.popupmc.areaSpawner.utils.RandomSpawnCache;
+import com.popupmc.areaspawner.AreaSpawner;
+import com.popupmc.areaspawner.spawn.RandomSpawnCache;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -37,10 +29,14 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * AreaSpawner's main command, contains admin commands, not intended for normal user interaction.
+ *
+ * @author lelesape
+ */
 public final class MainCommand implements CommandExecutor {
 
     final private AreaSpawner plugin;
-    private CommandSender sender;
     private String noPerm;
     private String unknown;
     private String reloaded;
@@ -72,25 +68,22 @@ public final class MainCommand implements CommandExecutor {
      * Sends a message to the CommandSender.
      * @param msg The message to be sent.
      */
-    private void send(String msg){
+    private void send(CommandSender sender, String msg){
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfigYaml().getAccess().getString("config.prefix")+" "+msg));
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        this.sender = sender;
-
-
         if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            send("&6List of commands");
-            send("&f/"+label+" help");
-            send("&f/"+label+" version");
-            send("&f/"+label+" reload");
+            send(sender, "&6List of commands");
+            send(sender, "&f/"+label+" help");
+            send(sender,"&f/"+label+" version");
+            send(sender,"&f/"+label+" reload");
 
 
         }else if(args[0].equalsIgnoreCase("version")) {
             if(!sender.hasPermission("areaSpawner.version")) {
-                send(noPerm);
+                send(sender, noPerm);
                 return true;
             }
 //            TODO: updateChecker
@@ -99,33 +92,33 @@ public final class MainCommand implements CommandExecutor {
 //                send("&fDownload here: http://bit.ly/2Pl4Rg7");
 //                return true;
 //            }
-            send("&fVersion: &e" + plugin.getVersion() + "&f. &aUp to date!");
+            send(sender,"&fVersion: &e" + plugin.getVersion() + "&f. &aUp to date!");
 
 
         //Reloading will only verify locations and remove any of them if necessary, it will not create new locations.
         }else if(args[0].equalsIgnoreCase("reload")) {
             if(!sender.hasPermission("areaSpawner.reload")) {
-                send(noPerm);
+                send(sender, noPerm);
                 return true;
             }
             plugin.reloadFiles();
             loadMessages();
             RandomSpawnCache.getInstance().reValidateSpawns();
-            send(reloaded);
+            send(sender, reloaded);
 
 
         }else if(args[0].equalsIgnoreCase("regenerate")){
             if(!sender.hasPermission("areaSpawner.regenerate")) {
-                send(noPerm);
+                send(sender, noPerm);
                 return true;
             }
-            send(regenerating);
+            send(sender, regenerating);
             RandomSpawnCache.getInstance().createNewSafeSpawns();
 
 
         }else if(args[0].equalsIgnoreCase("getCache")) {
             if(!sender.hasPermission("areaSpawner.getCache")) {
-                send(noPerm);
+                send(sender, noPerm);
                 return true;
             }
             RandomSpawnCache rsp = RandomSpawnCache.getInstance();
@@ -133,31 +126,31 @@ public final class MainCommand implements CommandExecutor {
 
             for(String worldName : locations.keySet()) {
                 for (Location loc : locations.get(worldName)) {
-                    send("location: " + loc.getWorld() + " " + loc.getX() + " " + loc.getY() + " " + loc.getZ());
+                    send(sender, "location: " + loc.getWorld() + " " + loc.getX() + " " + loc.getY() + " " + loc.getZ());
                 }
             }
-            send("done");
+            send(sender, "done");
 
         }else if(args[0].equalsIgnoreCase("teleport")) {
             if(sender instanceof ConsoleCommandSender){
-                send("&cYou cannot send that command from console.");
+                send(sender, "&cYou cannot send that command from console.");
                 return true;
             }
             if(!sender.hasPermission("areaSpawner.teleport")) {
-                send(noPerm);
+                send(sender, noPerm);
                 return true;
             }
             RandomSpawnCache rsp = RandomSpawnCache.getInstance();
             ((Player)sender).teleport(rsp.getSafeSpawn(((Player) sender).getWorld().getName()));
-            send("&aTeleported!");
+            send(sender, "&aTeleported!");
 
 
 
-            send("done");
+            send(sender, "done");
 
             //unknown command
         }else {
-            send(unknown.replace("%command%", label));
+            send(sender, unknown.replace("%command%", label));
         }
 
 
