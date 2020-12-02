@@ -108,6 +108,7 @@ public class RandomSpawnCache {
                 return toGive.clone().add(0.5,1,0.5);
             }
         }
+
         return null;
     }
 
@@ -270,9 +271,9 @@ public class RandomSpawnCache {
 
             if(config.getBoolean("config.no spawn."+worldName+".enabled")) {
                 forbidden = new Region(config.getInt("config.no spawn." + worldName + ".min x"),
-                    config.getInt("config.no spawn." + worldName + ".max x"),
-                    config.getInt("config.no spawn." + worldName + ".min z"),
-                    config.getInt("config.no spawn." + worldName + ".max z"));
+                        config.getInt("config.no spawn." + worldName + ".max x"),
+                        config.getInt("config.no spawn." + worldName + ".min z"),
+                        config.getInt("config.no spawn." + worldName + ".max z"));
             }else{
                 forbidden = new Region(0,0,0,0);
             }
@@ -312,29 +313,35 @@ public class RandomSpawnCache {
      * @param allowed The region where spawn locations are allowed.
      * @return A safe to spawn location with the given parameters or null if failed to generate one after 25 attempts.
      */
-    private Location generateNewSafeLocation(World world, Region forbidden, Region allowed){
-        //TODO
+    private Location generateNewSafeLocation(World world, Region forbidden, Region allowed) {
         Location making = new Location(world, 0, -10, 0);
         Random r = new Random();
 
         //Make 25 attempts
-        for (int i = 0; i < 25; i++) {
-            debug("&eAttempt number "+i+" to generate location.");
+        for (int i = 1; i <= 25 ; i++) {
+            debug("&eAttempt number " + i + " to generate location.");
 
             making.setX(r.nextInt(allowed.getMaxX() - allowed.getMinX()) + allowed.getMinX());
             making.setZ(r.nextInt(allowed.getMaxZ() - allowed.getMinZ()) + allowed.getMinZ());
             making.setY(getHighestY(making));
 
             //FixME: REMOVE
-            Bukkit.broadcastMessage("Block: "+making.getBlock().toString());
+            Bukkit.broadcastMessage("Block: " + making.getBlock().toString());
 
 
-            if(isValidLocation(making, forbidden)){
+            if(isValidLocation(making, forbidden)) {
                 debug("&aSafe valid location achieved!");
                 return making;
             }
-        }
 
+            //TODO: Find a better way to not put so much load on the CPU
+            try {
+                Thread.sleep(856);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
 
         return null;
     }

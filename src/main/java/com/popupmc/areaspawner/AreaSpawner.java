@@ -60,9 +60,9 @@ public final class AreaSpawner extends JavaPlugin {
         send("&fJoin my discord server at &chttps://discordapp.com/invite/ZznhQud");
         send("Please consider subscribing to my yt channel: &c" + pdfFile.getWebsite());
         reloadFiles();
+        RandomSpawnCache.createInstance(this);
         registerEvents();
         registerCommands();
-        RandomSpawnCache.createInstance(this);
         //updateChecker();
     }
 
