@@ -13,10 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-package com.popupmc.areaSpawner.commands;
+package com.popupmc.areaspawner.commands;
 
-import com.popupmc.areaSpawner.AreaSpawner;
-import com.popupmc.areaSpawner.utils.RandomSpawnCache;
+import com.popupmc.areaspawner.AreaSpawner;
+import com.popupmc.areaspawner.utils.RandomSpawnCache;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
