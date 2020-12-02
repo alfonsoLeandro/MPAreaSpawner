@@ -16,7 +16,7 @@ limitations under the License.
 package com.popupmc.areaspawner;
 
 import com.popupmc.areaspawner.commands.MainCommand;
-import com.popupmc.areaspawner.utils.RandomSpawnCache;
+import com.popupmc.areaspawner.spawn.RandomSpawnCache;
 import com.popupmc.areaspawner.utils.YamlFile;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,6 +26,11 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * AreaSpawner main class. In charge of registering any plugin-server interaction.
+ *
+ * @author lelesape
+ */
 public final class AreaSpawner extends JavaPlugin {
 
     final private PluginDescriptionFile pdfFile = getDescription();

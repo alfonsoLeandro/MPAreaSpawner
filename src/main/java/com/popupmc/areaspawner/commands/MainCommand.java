@@ -16,7 +16,7 @@ limitations under the License.
 package com.popupmc.areaspawner.commands;
 
 import com.popupmc.areaspawner.AreaSpawner;
-import com.popupmc.areaspawner.utils.RandomSpawnCache;
+import com.popupmc.areaspawner.spawn.RandomSpawnCache;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -29,6 +29,11 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * AreaSpawner's main command, contains admin commands, not intended for normal user interaction.
+ *
+ * @author lelesape
+ */
 public final class MainCommand implements CommandExecutor {
 
     final private AreaSpawner plugin;

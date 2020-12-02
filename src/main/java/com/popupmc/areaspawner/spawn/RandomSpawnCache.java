@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-package com.popupmc.areaspawner.utils;
+package com.popupmc.areaspawner.spawn;
 
 import com.popupmc.areaspawner.AreaSpawner;
 import org.bukkit.*;
@@ -25,6 +25,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Creates new random spawn points with config parameters, saves these spawn locations
+ * in a hashmap, and gives these locations.
+ *
+ * @author lelesape
+ */
 public class RandomSpawnCache {
 
     private static RandomSpawnCache instance;
