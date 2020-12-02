@@ -46,7 +46,9 @@ If you have any issues or doubts do not hesitate to contact me by the following 
  
 <a name="sponsor"></a>
 ## About the sponsor
-TODO
+**DarkPrincess** is the admin of *PopupMC* and the sponsor to several plugins the server uses. PopupMC likes to invest in high-quality plugins which they can proudly put their name on while simulatinously financially supporting developers and overseeing the projects.
+
+You can connect to PopupMC at this address: `mc.popupmc.com` and join their Discord server [here](https://discord.gg/ru3Hk9Vfny)
 
 
 <a name="license"></a>
