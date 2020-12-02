@@ -37,7 +37,6 @@ import java.util.List;
 public final class MainCommand implements CommandExecutor {
 
     final private AreaSpawner plugin;
-    private CommandSender sender;
     private String noPerm;
     private String unknown;
     private String reloaded;
@@ -69,25 +68,22 @@ public final class MainCommand implements CommandExecutor {
      * Sends a message to the CommandSender.
      * @param msg The message to be sent.
      */
-    private void send(String msg){
+    private void send(CommandSender sender, String msg){
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfigYaml().getAccess().getString("config.prefix")+" "+msg));
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        this.sender = sender;
-
-
         if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            send("&6List of commands");
-            send("&f/"+label+" help");
-            send("&f/"+label+" version");
-            send("&f/"+label+" reload");
+            send(sender, "&6List of commands");
+            send(sender, "&f/"+label+" help");
+            send(sender,"&f/"+label+" version");
+            send(sender,"&f/"+label+" reload");
 
 
         }else if(args[0].equalsIgnoreCase("version")) {
             if(!sender.hasPermission("areaSpawner.version")) {
-                send(noPerm);
+                send(sender, noPerm);
                 return true;
             }
 //            TODO: updateChecker
@@ -96,33 +92,33 @@ public final class MainCommand implements CommandExecutor {
 //                send("&fDownload here: http://bit.ly/2Pl4Rg7");
 //                return true;
 //            }
-            send("&fVersion: &e" + plugin.getVersion() + "&f. &aUp to date!");
+            send(sender,"&fVersion: &e" + plugin.getVersion() + "&f. &aUp to date!");
 
 
         //Reloading will only verify locations and remove any of them if necessary, it will not create new locations.
         }else if(args[0].equalsIgnoreCase("reload")) {
             if(!sender.hasPermission("areaSpawner.reload")) {
-                send(noPerm);
+                send(sender, noPerm);
                 return true;
             }
             plugin.reloadFiles();
             loadMessages();
             RandomSpawnCache.getInstance().reValidateSpawns();
-            send(reloaded);
+            send(sender, reloaded);
 
 
         }else if(args[0].equalsIgnoreCase("regenerate")){
             if(!sender.hasPermission("areaSpawner.regenerate")) {
-                send(noPerm);
+                send(sender, noPerm);
                 return true;
             }
-            send(regenerating);
+            send(sender, regenerating);
             RandomSpawnCache.getInstance().createNewSafeSpawns();
 
 
         }else if(args[0].equalsIgnoreCase("getCache")) {
             if(!sender.hasPermission("areaSpawner.getCache")) {
-                send(noPerm);
+                send(sender, noPerm);
                 return true;
             }
             RandomSpawnCache rsp = RandomSpawnCache.getInstance();
@@ -130,31 +126,31 @@ public final class MainCommand implements CommandExecutor {
 
             for(String worldName : locations.keySet()) {
                 for (Location loc : locations.get(worldName)) {
-                    send("location: " + loc.getWorld() + " " + loc.getX() + " " + loc.getY() + " " + loc.getZ());
+                    send(sender, "location: " + loc.getWorld() + " " + loc.getX() + " " + loc.getY() + " " + loc.getZ());
                 }
             }
-            send("done");
+            send(sender, "done");
 
         }else if(args[0].equalsIgnoreCase("teleport")) {
             if(sender instanceof ConsoleCommandSender){
-                send("&cYou cannot send that command from console.");
+                send(sender, "&cYou cannot send that command from console.");
                 return true;
             }
             if(!sender.hasPermission("areaSpawner.teleport")) {
-                send(noPerm);
+                send(sender, noPerm);
                 return true;
             }
             RandomSpawnCache rsp = RandomSpawnCache.getInstance();
             ((Player)sender).teleport(rsp.getSafeSpawn(((Player) sender).getWorld().getName()));
-            send("&aTeleported!");
+            send(sender, "&aTeleported!");
 
 
 
-            send("done");
+            send(sender, "done");
 
             //unknown command
         }else {
-            send(unknown.replace("%command%", label));
+            send(sender, unknown.replace("%command%", label));
         }
 
 

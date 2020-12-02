@@ -72,6 +72,7 @@ public class RandomSpawnCache {
 
 
 
+
     /**
      * Empties the safe spawn locations list and fills it with new locations (async).
      */
@@ -110,30 +111,28 @@ public class RandomSpawnCache {
         return null;
     }
 
+
+    /**
+     * Replaces a used location for a new one.
+     * @param toReplace The location to remove from the list of locations.
+     */
     private void replaceLocation(Location toReplace){
         FileConfiguration config = plugin.getConfig();
+
         String worldName = toReplace.getWorld().getName();
-        int[] xRange = new int[2];
-        int[] zRange = new int[2];
-        int[] fXRange = new int[2];
-        int[] fZRange = new int[2];
+
+        Region allowed = new Region(config.getInt("config.random spawn."+worldName+".min x"),
+                config.getInt("config.random spawn."+worldName+".max x"),
+                config.getInt("config.random spawn."+worldName+".min z"),
+                config.getInt("config.random spawn."+worldName+".max z"));
+
+        Region forbidden = new Region(config.getInt("config.no spawn."+worldName+".min x"),
+                config.getInt("config.no spawn."+worldName+".max x"),
+                config.getInt("config.no spawn."+worldName+".min z"),
+                config.getInt("config.no spawn."+worldName+".max z"));
 
 
-        xRange[0] = config.getInt("config.random spawn."+worldName+".min x");
-        xRange[1] = config.getInt("config.random spawn."+worldName+".max x");
-
-        zRange[0] = config.getInt("config.random spawn."+worldName+".min z");
-        zRange[1] = config.getInt("config.random spawn."+worldName+".max x");
-
-        if(config.getBoolean("config.no spawn."+worldName+".enabled")){
-            fXRange[0] = config.getInt("config.no spawn."+worldName+".min x");
-            fXRange[1] = config.getInt("config.no spawn."+worldName+".max x");
-
-            fZRange[0] = config.getInt("config.no spawn."+worldName+".min z");
-            fZRange[1] = config.getInt("config.no spawn."+worldName+".max z");
-        }
-
-        Location loc = generateNewSafeLocation(toReplace.getWorld(), fXRange, fZRange, xRange, zRange);
+        Location loc = generateNewSafeLocation(toReplace.getWorld(), forbidden, allowed);
 
         if(loc == null){
             debug("&cFailed to add replacement location after 25 attempts");
@@ -151,10 +150,6 @@ public class RandomSpawnCache {
      */
     public void reValidateSpawns(){
         FileConfiguration config = plugin.getConfig();
-        int[] xRange = new int[2];
-        int[] zRange = new int[2];
-        int[] fXRange = new int[2];
-        int[] fZRange = new int[2];
 
         for(String worldName : spawnLocations.keySet()){
             List<Location> locations = new ArrayList<>(spawnLocations.get(worldName));
@@ -167,31 +162,28 @@ public class RandomSpawnCache {
                 continue;
             }
 
-            xRange[0] = config.getInt("config.random spawn."+worldName+".min x");
-            xRange[1] = config.getInt("config.random spawn."+worldName+".max x");
 
-            zRange[0] = config.getInt("config.random spawn."+worldName+".min z");
-            zRange[1] = config.getInt("config.random spawn."+worldName+".max x");
+            Region allowed = new Region(config.getInt("config.random spawn."+worldName+".min x"),
+                    config.getInt("config.random spawn."+worldName+".max x"),
+                    config.getInt("config.random spawn."+worldName+".min z"),
+                    config.getInt("config.random spawn."+worldName+".max z"));
 
-            if(config.getBoolean("config.no spawn."+worldName+".enabled")) {
-                fXRange[0] = config.getInt("config.no spawn." + worldName + ".min x");
-                fXRange[1] = config.getInt("config.no spawn." + worldName + ".max x");
+            Region forbidden = new Region(config.getInt("config.no spawn."+worldName+".min x"),
+                    config.getInt("config.no spawn."+worldName+".max x"),
+                    config.getInt("config.no spawn."+worldName+".min z"),
+                    config.getInt("config.no spawn."+worldName+".max z"));
 
-                fZRange[0] = config.getInt("config.no spawn." + worldName + ".min z");
-                fZRange[1] = config.getInt("config.no spawn." + worldName + ".max z");
-
-                if(isInRegion(fXRange[0], fZRange[0], fXRange[1], fZRange[1], xRange[0], xRange[1]) &&
-                        isInRegion(fXRange[0], fZRange[0], fXRange[1], fZRange[1], zRange[0], zRange[1])){
-                    debug("&cThe no-spawn region is greater than the spawn region for world "+worldName);
-                    debug("&cPlease correct this. Every location for this world will be removed.");
-                    spawnLocations.remove(worldName);
-                    continue;
-                }
+            if(forbidden.contains(allowed)){
+                debug("&cThe no-spawn region is greater than the spawn region for world "+worldName);
+                debug("&cPlease correct this. Every location for this world will be removed.");
+                spawnLocations.remove(worldName);
+                continue;
             }
 
 
+
             for(Location loc : locations){
-                if(!isValidLocation(loc, fXRange, fZRange)){
+                if(!isValidLocation(loc, forbidden)){
                     spawnLocations.get(worldName).remove(loc);
                     debug("&cRemoved a location from the locations list for "+worldName);
                 }
@@ -199,9 +191,13 @@ public class RandomSpawnCache {
         }
     }
 
-
-    public boolean isValidLocation(Location loc, int[] fRegionXValues, int[] fRegionZValues){
-        //TODO
+    /**
+     * Checks if a location follows a number of steps for considering it "safe" enough for a player to spawn in.
+     * @param loc The location to analyze.
+     * @param forbidden The "forbidden" spawn region for this location's world.
+     * @return true if the location passed every check.
+     */
+    public boolean isValidLocation(Location loc, Region forbidden){
         //Steps for getting a safe location:
         // 1. y is greater than 0 and lesser than 255.
         // 2. x and z are within the spawn region and outside no-spawn region.
@@ -214,7 +210,7 @@ public class RandomSpawnCache {
             send("&cNo non-air block found.");
             return false;
         }
-        if(isInRegion(fRegionXValues[0], fRegionZValues[0], fRegionXValues[1], fRegionZValues[1], loc.getX(), loc.getZ())){
+        if(forbidden.contains(loc.getBlockX(), loc.getBlockZ())){
             debug("&cLocation is in no-spawn region.");
             return false;
         }
@@ -248,44 +244,34 @@ public class RandomSpawnCache {
         for(String worldName : config.getConfigurationSection("config.random spawn").getKeys(false)){
             List<Location> locations = new ArrayList<>();
             World world = Bukkit.getWorld(worldName);
-            int[] xRange = new int[2];
-            int[] zRange = new int[2];
-            int[] fXRange = new int[2];
-            int[] fZRange = new int[2];
 
             if(world == null){
                 debug("&cWorld "+worldName+" is null.");
                 continue;
             }
 
+            Region allowed = new Region(config.getInt("config.random spawn."+worldName+".min x"),
+                    config.getInt("config.random spawn."+worldName+".max x"),
+                    config.getInt("config.random spawn."+worldName+".min z"),
+                    config.getInt("config.random spawn."+worldName+".max z"));
 
-            xRange[0] = config.getInt("config.random spawn."+worldName+".min x");
-            xRange[1] = config.getInt("config.random spawn."+worldName+".max x");
+            Region forbidden = new Region(config.getInt("config.no spawn."+worldName+".min x"),
+                    config.getInt("config.no spawn."+worldName+".max x"),
+                    config.getInt("config.no spawn."+worldName+".min z"),
+                    config.getInt("config.no spawn."+worldName+".max z"));
 
-            zRange[0] = config.getInt("config.random spawn."+worldName+".min z");
-            zRange[1] = config.getInt("config.random spawn."+worldName+".max x");
 
-            if(config.getBoolean("config.no spawn."+worldName+".enabled")){
-                fXRange[0] = config.getInt("config.no spawn."+worldName+".min x");
-                fXRange[1] = config.getInt("config.no spawn."+worldName+".max x");
-
-                fZRange[0] = config.getInt("config.no spawn."+worldName+".min z");
-                fZRange[1] = config.getInt("config.no spawn."+worldName+".max z");
-
-                if(isInRegion(fXRange[0], fZRange[0], fXRange[1], fZRange[1], xRange[0], xRange[1]) &&
-                        isInRegion(fXRange[0], fZRange[0], fXRange[1], fZRange[1], zRange[0], zRange[1])){
-                    debug("&cThe no-spawn region is greater than the spawn region for world "+worldName);
-                    debug("&cPlease correct this. spawn calculation for this world aborted.");
-                    continue;
-                }
-
+            if(forbidden.contains(allowed)){
+                debug("&cThe no-spawn region is greater than the spawn region for world "+worldName);
+                debug("&cPlease correct this. spawn calculation for this world aborted.");
+                continue;
             }
 
 
             for (int i = 1; i <= config.getInt("config.cache.spawns"); i++) {
                 debug("&eAttempting to add location number "+i+" for world "+worldName);
 
-                Location loc = generateNewSafeLocation(world, fXRange, fZRange, xRange, zRange);
+                Location loc = generateNewSafeLocation(world, forbidden, allowed);
 
                 if(loc == null){
                     debug("&cFailed to add location number "+i+" after 25 attempts");
@@ -305,13 +291,11 @@ public class RandomSpawnCache {
     /**
      * Generates a new safe to spawn location with the given parameters.
      * @param world The world to generate the location for.
-     * @param fRegionXValues The "no spawn" min x and max x values.
-     * @param fRegionZValues The "no spawn" min z and max z values.
-     * @param regionXValues The allowed to spawn area min x and max x values.
-     * @param regionZValues The allowed to spawn area min z and max z values.
+     * @param forbidden The region where spawn locations are forbidden and is inside the allowed region.
+     * @param allowed The region where spawn locations are allowed.
      * @return A safe to spawn location with the given parameters or null if failed to generate one after 25 attempts.
      */
-    private Location generateNewSafeLocation(World world, int[] fRegionXValues, int[] fRegionZValues, int[] regionXValues, int[] regionZValues){
+    private Location generateNewSafeLocation(World world, Region forbidden, Region allowed){
         //TODO
         Location making = new Location(world, 0, -10, 0);
         Random r = new Random();
@@ -320,15 +304,15 @@ public class RandomSpawnCache {
         for (int i = 0; i < 25; i++) {
             debug("&eAttempt number "+i+" to generate location.");
 
-            making.setX(r.nextInt(regionXValues[1] - regionXValues[0]) + regionXValues[0]);
-            making.setZ(r.nextInt(regionZValues[1] - regionZValues[0]) + regionZValues[0]);
+            making.setX(r.nextInt(allowed.getMaxX() - allowed.getMinX()) + allowed.getMinX());
+            making.setZ(r.nextInt(allowed.getMaxZ() - allowed.getMinZ()) + allowed.getMinZ());
             making.setY(getHighestY(making));
 
             //FixME: REMOVE
             Bukkit.broadcastMessage("Block: "+making.getBlock().toString());
 
 
-            if(isValidLocation(making, fRegionXValues, fRegionZValues)){
+            if(isValidLocation(making, forbidden)){
                 debug("&aSafe valid location achieved!");
                 return making;
             }
@@ -338,19 +322,6 @@ public class RandomSpawnCache {
         return null;
     }
 
-    /**
-     * Checks if a point (x,z) is within a given region.
-     * @param regionMinx The minimum x value for the region.
-     * @param regionMinZ The minimum z value for the region.
-     * @param regionMaxX The maximum x value for the region.
-     * @param regionMaxZ The maximum z value for the region.
-     * @param pointX The point's x value.
-     * @param pointZ The point's y value.
-     * @return true if the point is within the given region.
-     */
-    private boolean isInRegion(int regionMinx, int regionMinZ, int regionMaxX, int regionMaxZ, double pointX, double pointZ){
-        return (pointX <= regionMaxX && pointX >= regionMinx) && (pointZ <= regionMaxZ && pointZ >= regionMinZ);
-    }
 
 
     //TEMPORAL. USED FOR TESTING
