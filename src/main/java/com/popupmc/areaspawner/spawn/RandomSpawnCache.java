@@ -126,11 +126,16 @@ public class RandomSpawnCache {
                 config.getInt("config.random spawn."+worldName+".min z"),
                 config.getInt("config.random spawn."+worldName+".max z"));
 
-        Region forbidden = new Region(config.getInt("config.no spawn."+worldName+".min x"),
-                config.getInt("config.no spawn."+worldName+".max x"),
-                config.getInt("config.no spawn."+worldName+".min z"),
-                config.getInt("config.no spawn."+worldName+".max z"));
+        Region forbidden;
 
+        if(config.getBoolean("config.no spawn."+worldName+".enabled")) {
+            forbidden = new Region(config.getInt("config.no spawn." + worldName + ".min x"),
+                    config.getInt("config.no spawn." + worldName + ".max x"),
+                    config.getInt("config.no spawn." + worldName + ".min z"),
+                    config.getInt("config.no spawn." + worldName + ".max z"));
+        }else{
+            forbidden = new Region(0,0,0,0);
+        }
 
         Location loc = generateNewSafeLocation(toReplace.getWorld(), forbidden, allowed);
 
@@ -168,10 +173,16 @@ public class RandomSpawnCache {
                     config.getInt("config.random spawn."+worldName+".min z"),
                     config.getInt("config.random spawn."+worldName+".max z"));
 
-            Region forbidden = new Region(config.getInt("config.no spawn."+worldName+".min x"),
-                    config.getInt("config.no spawn."+worldName+".max x"),
-                    config.getInt("config.no spawn."+worldName+".min z"),
-                    config.getInt("config.no spawn."+worldName+".max z"));
+            Region forbidden;
+
+            if(config.getBoolean("config.no spawn."+worldName+".enabled")) {
+                forbidden = new Region(config.getInt("config.no spawn." + worldName + ".min x"),
+                        config.getInt("config.no spawn." + worldName + ".max x"),
+                        config.getInt("config.no spawn." + worldName + ".min z"),
+                        config.getInt("config.no spawn." + worldName + ".max z"));
+            }else{
+                forbidden = new Region(0,0,0,0);
+            }
 
             if(forbidden.contains(allowed)){
                 debug("&cThe no-spawn region is greater than the spawn region for world "+worldName);
@@ -255,10 +266,16 @@ public class RandomSpawnCache {
                     config.getInt("config.random spawn."+worldName+".min z"),
                     config.getInt("config.random spawn."+worldName+".max z"));
 
-            Region forbidden = new Region(config.getInt("config.no spawn."+worldName+".min x"),
-                    config.getInt("config.no spawn."+worldName+".max x"),
-                    config.getInt("config.no spawn."+worldName+".min z"),
-                    config.getInt("config.no spawn."+worldName+".max z"));
+            Region forbidden;
+
+            if(config.getBoolean("config.no spawn."+worldName+".enabled")) {
+                forbidden = new Region(config.getInt("config.no spawn." + worldName + ".min x"),
+                    config.getInt("config.no spawn." + worldName + ".max x"),
+                    config.getInt("config.no spawn." + worldName + ".min z"),
+                    config.getInt("config.no spawn." + worldName + ".max z"));
+            }else{
+                forbidden = new Region(0,0,0,0);
+            }
 
 
             if(forbidden.contains(allowed)){
