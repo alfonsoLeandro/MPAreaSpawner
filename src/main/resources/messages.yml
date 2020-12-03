@@ -1,5 +1,7 @@
 messages:
+  list of commands: '&6List of commands:'
   no permission: '&cNo permission'
   unknown command: '&cUnknown command. &fTry /%command% help'
   reloaded: '&aFiles reloaded!'
   regenerating: '&fRegenerating every spawn location for every world in config...'
+  list of locations: '&fList of locations per world:'

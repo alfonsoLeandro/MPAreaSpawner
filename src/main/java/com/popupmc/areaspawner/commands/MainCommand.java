@@ -42,6 +42,8 @@ public final class MainCommand implements CommandExecutor {
     private String unknown;
     private String reloaded;
     private String regenerating;
+    private String locationsList;
+    private String commandList;
 
 
     /**
@@ -59,10 +61,12 @@ public final class MainCommand implements CommandExecutor {
     private void loadMessages(){
         FileConfiguration messages = plugin.getMessagesYaml().getAccess();
 
+        commandList = messages.getString("messages.list of commands");
         noPerm = messages.getString("messages.no permission");
         unknown = messages.getString("messages.unknown command");
         reloaded = messages.getString("messages.reloaded");
         regenerating = messages.getString("messages.regenerating");
+        locationsList = messages.getString("messages.list of locations");
     }
 
     /**
@@ -76,10 +80,12 @@ public final class MainCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            send(sender, "&6List of commands");
+            send(sender, commandList);
             send(sender, "&f/"+label+" help");
             send(sender,"&f/"+label+" version");
             send(sender,"&f/"+label+" reload");
+            send(sender,"&f/"+label+" regenerate");
+            send(sender,"&f/"+label+" list");
 
 
         }else if(args[0].equalsIgnoreCase("version")) {
@@ -108,6 +114,7 @@ public final class MainCommand implements CommandExecutor {
             send(sender, reloaded);
 
 
+
         }else if(args[0].equalsIgnoreCase("regenerate")){
             if(!sender.hasPermission("areaSpawner.regenerate")) {
                 send(sender, noPerm);
@@ -117,19 +124,22 @@ public final class MainCommand implements CommandExecutor {
             RandomSpawnCache.getInstance().createNewSafeSpawns();
 
 
-        }else if(args[0].equalsIgnoreCase("getCache")) {
-            if(!sender.hasPermission("areaSpawner.getCache")) {
+
+        }else if(args[0].equalsIgnoreCase("list")) {
+            if(!sender.hasPermission("areaSpawner.list")) {
                 send(sender, noPerm);
                 return true;
             }
             RandomSpawnCache rsp = RandomSpawnCache.getInstance();
             HashMap<String, List<Location>> locations = rsp.getLocationsInCache();
 
-            send(sender, "");
+            send(sender, locationsList);
             for(String worldName : locations.keySet()) {
                 send(sender, worldName+": "+locations.get(worldName).size()+" locations");
             }
 
+
+        //TEMP - Used for testing
         }else if(args[0].equalsIgnoreCase("teleport")) {
             if(sender instanceof ConsoleCommandSender){
                 send(sender, "&cYou cannot send that command from console.");
@@ -143,9 +153,6 @@ public final class MainCommand implements CommandExecutor {
             ((Player)sender).teleport(rsp.getSafeSpawn(((Player) sender).getWorld().getName()));
             send(sender, "&aTeleported!");
 
-
-
-            send(sender, "done");
 
             //unknown command
         }else {
