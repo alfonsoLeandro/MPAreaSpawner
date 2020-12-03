@@ -33,10 +33,27 @@ import java.util.Random;
  */
 public class RandomSpawnCache {
 
+    /**
+     * The only instance for this class.
+     */
     private static RandomSpawnCache instance;
-    private HashMap<String, List<Location>> spawnLocations;
+    /**
+     * A hashmap containing a list of safe to spawn locations for each world in config.
+     */
+    private final HashMap<String, List<Location>> spawnLocations;
+    /**
+     * The plugin's main instance.
+     */
     final private AreaSpawner plugin;
-    final private BukkitRunnable runnable;
+    /**
+     * The runnable that will create the safe locations.
+     */
+    final private BukkitRunnable runnable = new BukkitRunnable() {
+        @Override
+        public void run() {
+            createSafeLocations();
+        }
+    };
 
     /**
      * Creates a new RandomSpawnCache instance, private for helping on applying Singleton pattern.
@@ -44,12 +61,7 @@ public class RandomSpawnCache {
      */
     private RandomSpawnCache(AreaSpawner plugin){
         this.plugin = plugin;
-        runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-                spawnLocations = createSafeLocations();
-            }
-        };
+        this.spawnLocations = new HashMap<>();
         createNewSafeSpawns();
         debug("Cache successfully initialized");
     }
@@ -244,17 +256,15 @@ public class RandomSpawnCache {
     }
 
     /**
-     * Creates as many safe spawn locations as specified in config for each world specified in config.
-     * @return A map containing a list of safe spawns for every world.
+     * Creates as many safe spawn locations as specified in config for each world specified in config and adds them to
+     * the world,locations map.
      */
-    public HashMap<String, List<Location>> createSafeLocations(){
+    public void createSafeLocations(){
+        FileConfiguration config = plugin.getConfigYaml().getAccess();
+
         debug("&eCreating safe locations...");
 
-        FileConfiguration config = plugin.getConfigYaml().getAccess();
-        HashMap<String, List<Location>> locationsPerWorld = new HashMap<>();
-
         for(String worldName : config.getConfigurationSection("config.random spawn").getKeys(false)){
-            List<Location> locations = new ArrayList<>();
             World world = Bukkit.getWorld(worldName);
 
             if(world == null){
@@ -278,12 +288,14 @@ public class RandomSpawnCache {
                 forbidden = new Region(0,0,0,0);
             }
 
-
             if(forbidden.contains(allowed)){
                 debug("&cThe no-spawn region is greater than the spawn region for world "+worldName);
                 debug("&cPlease correct this. spawn calculation for this world aborted.");
                 continue;
             }
+
+            spawnLocations.put(worldName, new ArrayList<>());
+            List<Location> locations = spawnLocations.get(worldName);
 
 
             for (int i = 1; i <= config.getInt("config.cache.spawns"); i++) {
@@ -301,15 +313,13 @@ public class RandomSpawnCache {
 
 
             debug("&aSuccessfully added "+locations.size()+" safe spawn locations for world "+worldName);
-            locationsPerWorld.put(worldName, locations);
         }
-        return locationsPerWorld;
     }
 
     /**
      * Generates a new safe to spawn location with the given parameters.
      * @param world The world to generate the location for.
-     * @param forbidden The region where spawn locations are forbidden and is inside the allowed region.
+     * @param forbidden The region where spawn locations are forbidden. This region should be inside the allowed region.
      * @param allowed The region where spawn locations are allowed.
      * @return A safe to spawn location with the given parameters or null if failed to generate one after 25 attempts.
      */
@@ -336,7 +346,7 @@ public class RandomSpawnCache {
 
             //TODO: Find a better way to not put so much load on the CPU
             try {
-                Thread.sleep(856);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
