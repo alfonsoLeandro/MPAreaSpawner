@@ -111,21 +111,27 @@ essentials-home-teleport: true
 essentials-home-on-first-spawn: false
 
 # The spawn range players will be randomly spawned within
+# If x-loc, y-loc, or z-loc are -1, defaults to existing spawn location
+# Radius is number of blocks outward from that point
+# clamp-to-limits makes sure the values don't fall outside valid areas, suggest to always have enabled
+# If multiverse or essentials is enabled, -1 location values will use the spawn point in those plugins. Otherwise -1
+# uses the vanilla/base game spawn point location
 spawn-range:
-  max-x: 15_000_000
-  min-x: -15_000_000
-  max-y: 255
-  min-y: 0
-  max-z: 15_000_000
-  min-z: -15_000_000
+  clamp-to-limits: true
+  default-to-multiverse: false
+  default-to-essentials: false
 
-# The part of the spawn range above players will not be spawned in, optional
-# The y-value can be set to -1 to disable having a no-spawn range for the 
-# y-value
+  x-loc: 0
+  y-loc: 128
+  z-loc: 0
+  x-radius: 15_000_000
+  y-radius: 128
+  z-radius: 15_000_000
 
 # Optional: The radius from within the center of the spawn range to exclude 
 # spawning.
-# All can be set to -1 which disables the spawn exclusion for that axis
+# -1 means to disable no-spawn checks for that axis, if all are set to -1
+# then no-spawn-radius is completely disabled
 # If any axis is bigger than spawn-range, it will be clipped to spawn-range
 no-spawn-radius:
   x-radius: 10_000_000
