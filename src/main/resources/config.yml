@@ -2,8 +2,19 @@ config:
   prefix: '&f[&eMPAreaSpawner&f]'
   # Whether to show debug messages in console or not. Example of debug message: "generating safe spawn locations for world1"
   debug: true
-  # Random spawn settings
-  random spawn:
+  player spawn:
+    # Should players be teleported to a new location when respawning?
+    spawn on death: true
+    # Should players be teleported to a new location when first joining the server?
+    spawn on first join: true
+    # Should players be teleported to their bed when respawning? This will be ignored if they don't have a bed.
+    bed on death: true
+    # Should players need a permission node for being randomly teleported? This will only affect automatic random
+    # spawning. random spawn command needs a different permission. The permission node for this settings is
+    # "areaSpawner.automatic"
+    use permission: false
+  # The spawn zones per world. These are the zones that players are allowed to spawn in.
+  spawn zone:
     world:
       min x: -10_000_000
       max x: 10_000_000
@@ -14,7 +25,9 @@ config:
       max x: 10_000_000
       min z: -10_000_000
       max z: 10_000_000
-  no spawn:
+  # The no spawn zones, also per world and can be disabled/non-existent. These are the zones where players
+  # cannot spawn in. They should be smaller than the spawn zones and be inside them.
+  no spawn zone:
     world:
       enabled: true
       min x: -8_000_000
@@ -24,6 +37,8 @@ config:
   cache:
     # Number of spawns to calculate and save in the cache per world.
     spawns: 10
+    # Number of attempts to calculate a safe location until giving up
+    safe spawn attempts: 25
   blocks:
     blacklist:
       enabled: true

@@ -29,6 +29,9 @@ permissions:
   areaSpawner.regenerate:
     description: Allows you to regenerate safe spawn locations
     default: op
+  areaSpawner.automatic:
+    description: Allows you to be automatically teleported.
+    default: op
   areaSpawner.*:
     description: Gives access to every permission available
     default: op
@@ -37,3 +40,4 @@ permissions:
       areaSpawner.reload: true
       areaSpawner.list: true
       areaSpawner.regenerate: true
+      areaSpawner.automatic: true

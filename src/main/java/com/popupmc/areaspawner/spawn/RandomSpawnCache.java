@@ -134,18 +134,18 @@ public class RandomSpawnCache {
 
         String worldName = toReplace.getWorld().getName();
 
-        Region allowed = new Region(config.getInt("config.random spawn."+worldName+".min x"),
-                config.getInt("config.random spawn."+worldName+".max x"),
-                config.getInt("config.random spawn."+worldName+".min z"),
-                config.getInt("config.random spawn."+worldName+".max z"));
+        Region allowed = new Region(config.getInt("config.spawn zone."+worldName+".min x"),
+                config.getInt("config.spawn zone."+worldName+".max x"),
+                config.getInt("config.spawn zone."+worldName+".min z"),
+                config.getInt("config.spawn zone."+worldName+".max z"));
 
         Region forbidden;
 
-        if(config.getBoolean("config.no spawn."+worldName+".enabled")) {
-            forbidden = new Region(config.getInt("config.no spawn." + worldName + ".min x"),
-                    config.getInt("config.no spawn." + worldName + ".max x"),
-                    config.getInt("config.no spawn." + worldName + ".min z"),
-                    config.getInt("config.no spawn." + worldName + ".max z"));
+        if(config.getBoolean("config.no spawn zone."+worldName+".enabled")) {
+            forbidden = new Region(config.getInt("config.no spawn zone." + worldName + ".min x"),
+                    config.getInt("config.no spawn zone." + worldName + ".max x"),
+                    config.getInt("config.no spawn zone." + worldName + ".min z"),
+                    config.getInt("config.no spawn zone." + worldName + ".max z"));
         }else{
             forbidden = new Region(0,0,0,0);
         }
@@ -181,18 +181,18 @@ public class RandomSpawnCache {
             }
 
 
-            Region allowed = new Region(config.getInt("config.random spawn."+worldName+".min x"),
-                    config.getInt("config.random spawn."+worldName+".max x"),
-                    config.getInt("config.random spawn."+worldName+".min z"),
-                    config.getInt("config.random spawn."+worldName+".max z"));
+            Region allowed = new Region(config.getInt("config.spawn zone."+worldName+".min x"),
+                    config.getInt("config.spawn zone."+worldName+".max x"),
+                    config.getInt("config.spawn zone."+worldName+".min z"),
+                    config.getInt("config.spawn zone."+worldName+".max z"));
 
             Region forbidden;
 
-            if(config.getBoolean("config.no spawn."+worldName+".enabled")) {
-                forbidden = new Region(config.getInt("config.no spawn." + worldName + ".min x"),
-                        config.getInt("config.no spawn." + worldName + ".max x"),
-                        config.getInt("config.no spawn." + worldName + ".min z"),
-                        config.getInt("config.no spawn." + worldName + ".max z"));
+            if(config.getBoolean("config.no spawn zone."+worldName+".enabled")) {
+                forbidden = new Region(config.getInt("config.no spawn zone." + worldName + ".min x"),
+                        config.getInt("config.no spawn zone." + worldName + ".max x"),
+                        config.getInt("config.no spawn zone." + worldName + ".min z"),
+                        config.getInt("config.no spawn zone." + worldName + ".max z"));
             }else{
                 forbidden = new Region(0,0,0,0);
             }
@@ -225,7 +225,7 @@ public class RandomSpawnCache {
 
         send("&eCreating safe locations...");
 
-        for(String worldName : config.getConfigurationSection("config.random spawn").getKeys(false)){
+        for(String worldName : config.getConfigurationSection("config.spawn zone").getKeys(false)){
             World world = Bukkit.getWorld(worldName);
 
             if(world == null){
@@ -233,18 +233,18 @@ public class RandomSpawnCache {
                 continue;
             }
 
-            Region allowed = new Region(config.getInt("config.random spawn."+worldName+".min x"),
-                    config.getInt("config.random spawn."+worldName+".max x"),
-                    config.getInt("config.random spawn."+worldName+".min z"),
-                    config.getInt("config.random spawn."+worldName+".max z"));
+            Region allowed = new Region(config.getInt("config.spawn zone."+worldName+".min x"),
+                    config.getInt("config.spawn zone."+worldName+".max x"),
+                    config.getInt("config.spawn zone."+worldName+".min z"),
+                    config.getInt("config.spawn zone."+worldName+".max z"));
 
             Region forbidden;
 
-            if(config.getBoolean("config.no spawn."+worldName+".enabled")) {
-                forbidden = new Region(config.getInt("config.no spawn." + worldName + ".min x"),
-                        config.getInt("config.no spawn." + worldName + ".max x"),
-                        config.getInt("config.no spawn." + worldName + ".min z"),
-                        config.getInt("config.no spawn." + worldName + ".max z"));
+            if(config.getBoolean("config.no spawn zone."+worldName+".enabled")) {
+                forbidden = new Region(config.getInt("config.no spawn zone." + worldName + ".min x"),
+                        config.getInt("config.no spawn zone." + worldName + ".max x"),
+                        config.getInt("config.no spawn zone." + worldName + ".min z"),
+                        config.getInt("config.no spawn zone." + worldName + ".max z"));
             }else{
                 forbidden = new Region(0,0,0,0);
             }
@@ -265,7 +265,7 @@ public class RandomSpawnCache {
                 Location loc = generateNewSafeLocation(world, forbidden, allowed);
 
                 if(loc == null){
-                    debug("&cFailed to add location number "+i+" after 25 attempts");
+                    debug("&cFailed to add location number "+i+" after "+config.getInt("config.cache.safe spawn attempts")+" attempts");
                 }else {
                     debug("&aLocation number "+i+" successfully added!");
                     locations.add(loc);
@@ -295,9 +295,10 @@ public class RandomSpawnCache {
     private Location generateNewSafeLocation(World world, Region forbidden, Region allowed) {
         Location making = new Location(world, 0, -10, 0);
         Random r = new Random();
+        int attempts = plugin.getConfig().getInt("config.cache.safe spawn attempts");
 
-        //Make 25 attempts
-        for (int i = 1; i <= 25 ; i++) {
+        //Make x amount of attempts before giving up and calculating the next one
+        for (int i = 1; i <= attempts ; i++) {
             debug("&eAttempt number " + i + " to generate location.");
 
             making.setX(r.nextInt(allowed.getMaxX() - allowed.getMinX()) + allowed.getMinX());
