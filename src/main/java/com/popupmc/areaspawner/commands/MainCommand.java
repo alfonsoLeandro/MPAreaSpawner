@@ -37,6 +37,7 @@ import java.util.List;
 public final class MainCommand implements CommandExecutor {
 
     final private AreaSpawner plugin;
+    //Translatable messages
     private String noPerm;
     private String unknown;
     private String reloaded;
@@ -124,12 +125,10 @@ public final class MainCommand implements CommandExecutor {
             RandomSpawnCache rsp = RandomSpawnCache.getInstance();
             HashMap<String, List<Location>> locations = rsp.getLocationsInCache();
 
+            send(sender, "");
             for(String worldName : locations.keySet()) {
-                for (Location loc : locations.get(worldName)) {
-                    send(sender, "location: " + loc.getWorld() + " " + loc.getX() + " " + loc.getY() + " " + loc.getZ());
-                }
+                send(sender, worldName+": "+locations.get(worldName).size()+" locations");
             }
-            send(sender, "done");
 
         }else if(args[0].equalsIgnoreCase("teleport")) {
             if(sender instanceof ConsoleCommandSender){

@@ -215,45 +215,6 @@ public class RandomSpawnCache {
         }
     }
 
-    /**
-     * Checks if a location follows a number of steps for considering it "safe" enough for a player to spawn in.
-     * @param loc The location to analyze.
-     * @param forbidden The "forbidden" spawn region for this location's world.
-     * @return true if the location passed every check.
-     */
-    public boolean isValidLocation(Location loc, Region forbidden){
-        //Steps for getting a safe location:
-        // 1. y is greater than 0 and lesser than 255.
-        // 2. x and z are within the spawn region and outside no-spawn region.
-        // 3. there is 2 block air gap above location.
-        // 4. block is not in blacklist.
-        // 5. block is in whitelist or blocks not in whitelist are safe.
-        FileConfiguration config = plugin.getConfigYaml().getAccess();
-
-        if(loc.getY() < 1 || loc.getY() > 255){
-            send("&cNo non-air block found.");
-            return false;
-        }
-        if(forbidden.contains(loc.getBlockX(), loc.getBlockZ())){
-            debug("&cLocation is in no-spawn region.");
-            return false;
-        }
-        if(!loc.clone().add(0,1,0).getBlock().getType().equals(Material.AIR) || !loc.clone().add(0,2,0).getBlock().getType().equals(Material.AIR)){
-            debug("&cNo 2 block high air gap found.");
-            return false;
-        }
-        if(config.getBoolean("config.blocks.blacklist.enabled") && config.getStringList("config.blocks.blacklist.list").contains(loc.getBlock().getType().toString())){
-            debug("&cBlock "+loc.getBlock().getType().toString()+" is in blacklist.");
-            return false;
-        }
-        if(!config.getBoolean("config.blocks.whitelist.non-whitelist are safe") && !config.getStringList("config.blocks.whitelist.list").contains(loc.getBlock().getType().toString())){
-            debug("&cBlock "+loc.getBlock().getType().toString()+" is not in whitelist.");
-            return false;
-        }
-
-
-        return true;
-    }
 
     /**
      * Creates as many safe spawn locations as specified in config for each world specified in config and adds them to
@@ -262,7 +223,7 @@ public class RandomSpawnCache {
     public void createSafeLocations(){
         FileConfiguration config = plugin.getConfigYaml().getAccess();
 
-        debug("&eCreating safe locations...");
+        send("&eCreating safe locations...");
 
         for(String worldName : config.getConfigurationSection("config.random spawn").getKeys(false)){
             World world = Bukkit.getWorld(worldName);
@@ -309,10 +270,18 @@ public class RandomSpawnCache {
                     debug("&aLocation number "+i+" successfully added!");
                     locations.add(loc);
                 }
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
             }
 
 
-            debug("&aSuccessfully added "+locations.size()+" safe spawn locations for world "+worldName);
+            send("&aSuccessfully added "+locations.size()+" safe spawn locations for world "+worldName);
         }
     }
 
@@ -344,9 +313,8 @@ public class RandomSpawnCache {
                 return making;
             }
 
-            //TODO: Find a better way to not put so much load on the CPU
             try {
-                Thread.sleep(1000);
+                Thread.sleep(800);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -375,6 +343,47 @@ public class RandomSpawnCache {
             if(!newLoc.getBlock().getType().equals(Material.AIR)) return i;
         }
         return -10;
+    }
+
+
+    /**
+     * Checks if a location follows a number of steps for considering it "safe" enough for a player to spawn in.
+     * @param loc The location to analyze.
+     * @param forbidden The "forbidden" spawn region for this location's world.
+     * @return true if the location passed every check.
+     */
+    public boolean isValidLocation(Location loc, Region forbidden){
+        //Steps for getting a safe location:
+        // 1. y is greater than 0 and lesser than 255.
+        // 2. x and z are within the spawn region and outside no-spawn region.
+        // 3. there is 2 block air gap above location.
+        // 4. block is not in blacklist.
+        // 5. block is in whitelist or blocks not in whitelist are safe.
+        FileConfiguration config = plugin.getConfigYaml().getAccess();
+
+        if(loc.getY() < 1 || loc.getY() > 255){
+            send("&cNo non-air block found.");
+            return false;
+        }
+        if(forbidden.contains(loc.getBlockX(), loc.getBlockZ())){
+            debug("&cLocation is in no-spawn region.");
+            return false;
+        }
+        if(!loc.clone().add(0,1,0).getBlock().getType().equals(Material.AIR) || !loc.clone().add(0,2,0).getBlock().getType().equals(Material.AIR)){
+            debug("&cNo 2 block high air gap found.");
+            return false;
+        }
+        if(config.getBoolean("config.blocks.blacklist.enabled") && config.getStringList("config.blocks.blacklist.list").contains(loc.getBlock().getType().toString())){
+            debug("&cBlock "+loc.getBlock().getType().toString()+" is in blacklist.");
+            return false;
+        }
+        if(!config.getBoolean("config.blocks.whitelist.non-whitelist are safe") && !config.getStringList("config.blocks.whitelist.list").contains(loc.getBlock().getType().toString())){
+            debug("&cBlock "+loc.getBlock().getType().toString()+" is not in whitelist.");
+            return false;
+        }
+
+
+        return true;
     }
 
 
