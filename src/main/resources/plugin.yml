@@ -1,7 +1,7 @@
 name: ${project.name}
 version: ${project.version}
-main: com.popupmc.areaSpawner.AreaSpawner
-api-version: "1.13"
+main: com.popupmc.areaspawner.AreaSpawner
+api-version: 1.15
 authors: [lelesape]
 description: ${project.description}
 website: http://bit.ly/2mwvHWN
