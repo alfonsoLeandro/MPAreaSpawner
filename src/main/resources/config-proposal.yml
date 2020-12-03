@@ -1,0 +1,193 @@
+#############################
+#        AreaSpawner        #
+#        by @lelesape       #
+#############################
+
+### NOTE: When modifying values such as spawn-range, and the cache is enabled, 
+### spawns.yml will automatically detect and purge the cache on next 
+### config reload, server restart, or by command "/as purge-cache"
+
+# Don't touch this!
+config-version: 1
+
+###############
+### General ###
+###############
+
+# Will print lots of info to console! Only use if you know what you are doing :P
+debug-mode: false
+
+prefix: '&f[&eMPAreaSpawner&f]'
+
+####################
+### Spawn Safety ###
+####################
+
+# Is the list-of-blocks below a list that's unsafe and should never be spawned 
+# on, or is it the opposite, a list of blocks that should only be spawned on?
+# Defaults to "true", meaning the list below is blocks that should never be 
+# spawned on.
+is-the-list-unsafe: true
+
+# How many blocks should we check upwards for safety
+# This checks for air so the player isnt teleported into a block
+# Default is 2, the player height, you can increase this if you want
+# Decreasing it below 2 is dangerous!
+check-air-blocks-up: 2
+
+# A list of blocks that will either only be spawned on or never spawned on as
+# controlled above. Defaults to never being spawned on.
+# Please use POST-FLATTENING 1.13+ block IDs
+# https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+list-of-blocks:
+  - 'BEDROCK'
+  - 'PLANKS'
+  - 'SAPLING'
+  - 'TNT'
+  - 'STONE_PRESSURE_PLATE'
+  - 'WOODEN_PRESSURE_PLATE'
+  - 'LIGHT_WEIGHTED_PRESSURE_PLATE'
+  - 'HEAVY_WEIGHTED_PRESSURE_PLATE'
+  - 'LAVA'
+  - 'WATER'
+  - 'BED'
+  - 'WEB'
+  - 'TORCH'
+  - 'REDSTONE_BLOCK'
+  - 'CHEST'
+  - 'WHEAT'
+  - 'FURNACE'
+  - 'FIRE'
+  - 'REDSTONE'
+  - 'CACTUS'
+  - 'OBSIDIAN'
+  - 'PORTAL'
+  - 'ENCHANTING TABLE'
+
+################
+### Spawning ###
+################
+
+# What world to respawn players in?
+respawn-world: main
+
+# When searching for a spawn range, do we start from the top of the world or
+# the bottom.
+# The normal behaviour is starting from the top which puts players on the 
+# highest block where the sky is visible.
+# Alternatively, if we start from the bottom, players will spawn in the lowest
+# blocks possible (often in the deepest caves).
+top-to-bottom: true
+
+# If this is true, and top-to-bottom is also true, if the surface block is not 
+# ok (such as lakes) it will go past the surface and continue to try to find a
+# safe block (like caves under the lake)
+# Defaults to stop at the surface block
+check-past-surface: false
+
+# Enable the area spawning feature?
+# Disable this if you just want to use area spawnwer with commands only
+# such as /travel which will manually re-spawn the player
+spawning-enabled: true
+
+# Will AreaSpawner give players random spawns on death?
+on-death: true
+
+# Will AreaSpawner give players random spawns on first join?
+on-first-join: true
+
+# Will AreaSpawner send the players to their bed spawn on death?
+spawn-at-bed: true
+
+# Will AreaSpawner only random spawn players if they have the 
+# "areaspawner.spawn" permission node?
+use-permission-node: false
+
+# Essentials integration: teleport to home instead of random spawn on-death
+essentials-home-teleport: true
+
+# Should AreaSpawner set the user's Essentials home 'home' on first-join 
+# random spawn?
+essentials-home-on-first-spawn: false
+
+# The spawn range players will be randomly spawned within
+spawn-range:
+  max-x: 15_000_000
+  min-x: -15_000_000
+  max-y: 255
+  min-y: 0
+  max-z: 15_000_000
+  min-z: -15_000_000
+
+# The part of the spawn range above players will not be spawned in, optional
+# The y-value can be set to -1 to disable having a no-spawn range for the 
+# y-value
+
+# Optional: The radius from within the center of the spawn range to exclude 
+# spawning.
+# All can be set to -1 which disables the spawn exclusion for that axis
+# If any axis is bigger than spawn-range, it will be clipped to spawn-range
+no-spawn-radius:
+  x-radius: 10_000_000
+  y-radius: -1
+  z-radius: 10_000_000
+
+###############
+### Caching ###
+###############
+
+# Should AreaSpawner use the spawn caching feature?
+# This is highly reccomended to use!
+# Caching is done in the background, it will have no performance impact
+enable-spawn-cacher: true
+
+# How many locations should AreaSpawner keep cached?
+# This is done in the background so it will have no performance impact on
+# your server
+spawn-cache-target: 5000
+
+# How many tries to find a valid spawn before the plugin times out?
+# This is a worst case scenario, if a cached spawn point becomes unsafe by 
+# players, how many tries do we make to find a safe one.
+spawn-finder-tries-before-timeout: 100
+
+# When a spawn point is used, should it then be removed from cache and another
+# one generated randomly. there is no performance impact to this setting
+delete-cache-entry-on-use: false
+
+# When a player is attempted to spawn from a cache entry, and it's found to be 
+# unsafe, should AreaSpawner then delete the cache entry to prevent future
+# spawns on that same entry?
+# Reccomended to be on
+delete-cache-entry-on-unsafe: true
+
+# Should AreaSpawner check for safety anyways even though it's been cached
+# when attempting to spawn players at a cache entry.
+# Highly reccomended as the location could have become unsafe since it was
+# last cached.
+re-check-for-safety-on-spawn: true
+
+###############
+### /travel ###
+###############
+
+# Note: changes to this variable will require a restart.
+travel-enabled: true
+
+# In seconds, how long between /travel uses?
+# Set to 0 to disable.
+travel-cooldown: 10
+
+# When /travel is ran, should AreaSpawner remove the `areaspawn.travel` permission from the executor?
+# NOTE: Requires LuckPerms to be installed to manage permissions.
+remove-permission-on-first-use: false
+
+# How much should it cost for a user to use /travel?
+# Set to 0 to disable this feature.
+# NOTE: Requires Vault & and a Vault-compatible econ plugin to function!
+# You can also opt-to instead use my MPCommands plugin to have command charges
+# all in one place. spigotmc.org/resources/mp-command-settings.72098
+wild-cost: 0
+
+# Will set an Essentials home if no home is set on /travel
+home-on-travel: false
