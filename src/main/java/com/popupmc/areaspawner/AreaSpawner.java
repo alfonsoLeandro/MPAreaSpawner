@@ -40,6 +40,7 @@ public final class AreaSpawner extends JavaPlugin {
     final private String name = "&f[&" + color + pdfFile.getName() + "&f]";
     private YamlFile configYaml;
     private YamlFile messagesYaml;
+    private YamlFile cacheYaml;
 
     /**
      * Sends a message to the console, with colors and prefix added.
@@ -75,6 +76,7 @@ public final class AreaSpawner extends JavaPlugin {
         send("&fThank you for using my plugin! &" + color + pdfFile.getName() + "&f By " + pdfFile.getAuthors().get(0));
         send("&fJoin my discord server at &chttps://discordapp.com/invite/ZznhQud");
         send("Please consider subscribing to my yt channel: &c" + pdfFile.getWebsite());
+        RandomSpawnCache.getInstance().saveToFile();
     }
 
 //TODO: Update checker
@@ -124,6 +126,7 @@ public final class AreaSpawner extends JavaPlugin {
     public void reloadFiles() {
         configYaml = new YamlFile(this, "config.yml");
         messagesYaml = new YamlFile(this, "messages.yml");
+        cacheYaml = new YamlFile(this, "cache.yml");
     }
 
 
@@ -176,6 +179,14 @@ public final class AreaSpawner extends JavaPlugin {
      */
     public YamlFile getMessagesYaml(){
         return this.messagesYaml;
+    }
+
+    /**
+     * Get the cache YamlFile.
+     * @return The YamlFile containing the cache fileConfiguration.
+     */
+    public YamlFile getCacheYaml(){
+        return this.cacheYaml;
     }
 
 

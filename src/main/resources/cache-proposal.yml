@@ -1,7 +1,0 @@
-# Don't touch this!
-cache-settings-hash: 1234567890ABCDEF
-
-# Cache list
-cache:
-  - "0,80,0"
-  - "-100,50,75"

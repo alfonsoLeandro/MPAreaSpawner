@@ -1,0 +1,12 @@
+# Don't touch this! Internal use only.
+cache-settings-hash: 1234567890ABCDEF
+
+# List of saved locations.
+#cache:
+
+#cache:
+#   world:
+#     - LOCATION OBJECT
+#     - LOCATION OBJECT.
+#   anotherWorld:
+#     - LOCATION OBJECT

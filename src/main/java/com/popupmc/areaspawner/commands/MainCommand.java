@@ -56,7 +56,7 @@ public final class MainCommand implements CommandExecutor {
     }
 
     /**
-     * Loads every message from config.
+     * Loads every message used here from the messages file.
      */
     private void loadMessages(){
         FileConfiguration messages = plugin.getMessagesYaml().getAccess();
@@ -74,7 +74,7 @@ public final class MainCommand implements CommandExecutor {
      * @param msg The message to be sent.
      */
     private void send(CommandSender sender, String msg){
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfigYaml().getAccess().getString("config.prefix")+" "+msg));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfigYaml().getAccess().getString("prefix")+" "+msg));
     }
 
     @Override

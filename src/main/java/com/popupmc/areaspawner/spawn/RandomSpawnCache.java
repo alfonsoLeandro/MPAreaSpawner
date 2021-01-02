@@ -17,6 +17,7 @@ package com.popupmc.areaspawner.spawn;
 
 import com.popupmc.areaspawner.AreaSpawner;
 import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -385,6 +386,39 @@ public class RandomSpawnCache {
 
 
         return true;
+    }
+
+    /**
+     * Saves the locations in cache to the cache file.
+     */
+    public void saveToFile(){
+        //TODO: md5 hash?
+        FileConfiguration cache = plugin.getCacheYaml().getAccess();
+
+        //Delete everything in the cache list added before this. (any user output or stuff that shouldn't be there)
+        cache.set("cache", null);
+
+        for (String worldName : this.spawnLocations.keySet()) {
+            List<Location> locations = this.spawnLocations.get(worldName);
+            cache.set(worldName, locations);
+        }
+
+        plugin.getCacheYaml().save();
+    }
+
+    /**
+     * Loads every location in the cache file.
+     */
+    public void loadFromFile(){
+        //TODO: md5 hash?
+        ConfigurationSection cache = plugin.getCacheYaml().getAccess().getConfigurationSection("cache");
+
+        //If no cache section is found
+        if(cache == null) return;
+
+        for (String worldName : cache.getKeys(false)) {
+            //TODO: load spawns from cache file, verify them and if valid add them.
+        }
     }
 
 
