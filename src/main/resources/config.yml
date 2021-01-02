@@ -1,60 +1,200 @@
-config:
-  prefix: '&f[&eMPAreaSpawner&f]'
-  # Whether to show debug messages in console or not. Example of debug message: "generating safe spawn locations for world1"
-  debug: true
-  # Random spawn settings
-  random spawn:
-    world:
-      min x: -10_000_000
-      max x: 10_000_000
-      min z: -10_000_000
-      max z: 10_000_000
-    nether:
-      min x: -10_000_000
-      max x: 10_000_000
-      min z: -10_000_000
-      max z: 10_000_000
-  no spawn:
-    world:
-      enabled: true
-      min x: -8_000_000
-      max x: 8_000_000
-      min z: -8_000_000
-      max z: 8_000_000
-  cache:
-    # Number of spawns to calculate and save in the cache per world.
-    spawns: 10
-  blocks:
-    blacklist:
-      enabled: true
-      list:
-        - 'BEDROCK'
-        - 'OAK_LEAVES'
-        - 'PLANKS'
-        - 'SAPLING'
-        - 'TNT'
-        - 'STONE_PRESSURE_PLATE'
-        - 'WOODEN_PRESSURE_PLATE'
-        - 'LIGHT_WEIGHTED_PRESSURE_PLATE'
-        - 'HEAVY_WEIGHTED_PRESSURE_PLATE'
-        - 'LAVA'
-        - 'WATER'
-        - 'BED'
-        - 'WEB'
-        - 'GRASS'
-        - 'TORCH'
-        - 'REDSTONE_BLOCK'
-        - 'CHEST'
-        - 'WHEAT'
-        - 'FURNACE'
-        - 'FIRE'
-        - 'REDSTONE'
-        - 'CACTUS'
-        - 'OBSIDIAN'
-        - 'PORTAL'
-        - 'ENCHANTING TABLE'
-    whitelist:
-      # Are block that aren't found in the whitelist safe?
-      non-whitelist are safe: true
-      list:
-        - 'GRASS'
+#############################
+#        AreaSpawner        #
+#        by lelesape        #
+# sponsored by DarkPrincess #
+#############################
+# If you find this plugin useful remember to review it on spigot. ANY suggestions will
+# be heard, make sure to leave them either on the spigot plugin page, the github page for
+# this project or lelesape(MasterPlugins)'s plugin support discord server: https://bit.ly/MPDiscordSv
+#
+# When modifying spawn settings, make sure to regenerate spawn locations
+# using "/as regenerate" for applying changes.
+###############################################
+
+#Internal use only. Do not touch this.
+config version: 1
+
+###############
+#   General   #
+###############
+#Prefix for this plugin's messages.
+prefix: '&f[&eMPAreaSpawner&f]'
+
+# Whether to show debug messages in console or not. Example of debug message: "generating safe spawn locations for world1"
+debug: true
+
+#####################
+#  Spawn settings   #
+#####################
+
+# The world to generate locations for.
+# MUST exist.
+spawn world: world
+
+# The spawn range players will be randomly spawned within
+# If x-loc, y-loc, or z-loc are -1, defaults to existing spawn location
+# Radius is number of blocks outward from that point
+# clamp-to-limits makes sure the values don't fall outside valid areas, suggest to always have enabled
+# If multiverse or essentials is enabled, -1 location values will use the spawn point in those plugins. Otherwise -1
+# uses the vanilla/base game spawn point location
+spawn zone:
+  clamp to limits: true
+  default-to-multiverse: false
+  default-to-essentials: false
+
+  x-loc: 0
+  y-loc: 128
+  z-loc: 0
+  x range: 10_000_000
+  y range: 128
+  z range: 10_000_000
+
+# The no spawn zone can be disabled. These are the zones where players
+# cannot spawn in. They should be smaller than the spawn zones and be inside them.
+no spawn zone:
+  enabled: true
+  x range: 8_000_000
+  z range: 8_000_000
+
+# List of blocks that players are safe to spawn on.
+block whitelist:
+  - 'GRASS_BLOCK'
+  - 'DIRT'
+
+# List of block that should be recognized as non-safe.
+# Player will not spawn on this blocks.
+block blacklist:
+  - 'BEDROCK'
+  - 'PLANKS'
+  - 'SAPLING'
+  - 'TNT'
+  - 'STONE_PRESSURE_PLATE'
+  - 'WOODEN_PRESSURE_PLATE'
+  - 'LIGHT_WEIGHTED_PRESSURE_PLATE'
+  - 'HEAVY_WEIGHTED_PRESSURE_PLATE'
+  - 'LAVA'
+  - 'WATER'
+  - 'BED'
+  - 'WEB'
+  - 'TORCH'
+  - 'REDSTONE_BLOCK'
+  - 'CHEST'
+  - 'WHEAT'
+  - 'FURNACE'
+  - 'FIRE'
+  - 'REDSTONE'
+  - 'CACTUS'
+  - 'OBSIDIAN'
+  - 'PORTAL'
+  - 'ENCHANTING TABLE'
+
+
+# Are block that aren't found in the whitelist safe?
+non-whitelist are safe: true
+
+# The amount of air block needed for a location to be seen as safe.
+# Default: 2 (recommended).
+air gap above: 2
+
+# When searching for a spawn range, do we start from the top of the world or
+# the bottom.
+# The normal behaviour is starting from the top which puts players on the
+# highest block where the sky is visible.
+# Alternatively, if we start from the bottom, players will spawn in the lowest
+# blocks possible (often in the deepest caves).
+top to bottom: true
+
+# If this is true, and top-to-bottom is also true, if the surface block is not
+# ok (such as lakes) it will go past the surface and continue to try to find a
+# safe block (like caves under the lake)
+# Defaults to stop at the surface block
+check past surface: false
+
+###############
+#  Spawning   #
+###############
+
+# Should players be teleported to a new location when respawning?
+spawn on death: true
+
+# Should players be teleported to a new location when first joining the server?
+spawn on first join: true
+
+# Should players be teleported to their bed when respawning? This will be ignored if they don't have a bed.
+spawn on bed: true
+
+# Should players need a permission node for being randomly teleported? This will only affect automatic random
+# spawning. random spawn command needs a different permission. The permission node for this settings is
+# "areaSpawner.automatic"
+use permission: false
+
+###############
+# Essentials  #
+###############
+
+# Should players be teleported to home instead of random spawn on-death
+essentials home teleport: true
+
+# Should AreaSpawner set the user's Essentials home 'home' on first-join
+# random spawn?
+essentials home on first spawn: true
+
+###############
+#   Caching   #
+###############
+
+# Should AreaSpawner get some spawn locations and save them to use them when the moment comes?
+# HIGHLY RECOMMENDED to be enabled.
+# If disabled, AreaSpawner will try to generate a new safe spawn location on the spot
+# every time one is needed (not recommended).
+enable cache: true
+
+# Number of spawns to calculate and save in the cache.
+# The amount of spawns should not affect your server performance since spawn calculation is made async.
+amount of cached spawns: 5000
+
+# Number of attempts to calculate a safe location until giving up and calculating the next one.
+safe spawn attempts: 25
+
+# When a spawnpoint is used, should AreaSpawner remove this location and generate a new one?
+# Recommended if: the amount of cache spawns is not very high or you just don't want the possibility for
+# a player to spawn close to where another player spawned at all.
+delete location on use: false
+
+# When a location that was previously considered safe but it is no longer safe
+# should AreaSpawner delete them and generate a new one or just not use it?
+delete location on unsafe: true
+
+# Should AreaSpawner check for safety anyways even though it's been cached
+# when attempting to spawn players at a cache entry.
+# Highly recommended as the location could have become unsafe since it was
+# last cached.
+re check for safety on use: true
+
+
+##################
+# travel command #
+##################
+
+# Should the "/travel" command be enabled for players to use?
+# Requires "areaSpawner.travel" permission.
+# Changes to this field will need a plugin restart.
+travel enabled: true
+
+# How much time between "/travel" uses? Set to 0 disable.
+# s -> Seconds; m -> Minutes; h -> Hours; d -> Days.
+# Any incorrect input will be detected as 0s (disabled)
+travel cooldown: 10s
+
+# Will remove "areaSpawner.travel" permission from players that run the "/travel" command successfully.
+# Requires Vault.
+remove permission on travel: false
+
+# How much will a player be charged in order to run the "/travel" command successfully?
+# Set to 0 to disable. Requires Vault and an economy plugin to be installed on the server.
+# You can also opt-to instead use my MPCommandSettings plugin to have command charges and cooldowns
+# all in one place. spigotmc.org/resources/mp-command-settings.72098
+travel cost: 0
+
+# Will set an Essentials home on the traveled location if none set for the player before.
+home on travel: false

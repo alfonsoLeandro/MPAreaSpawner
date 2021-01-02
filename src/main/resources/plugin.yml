@@ -8,9 +8,13 @@ website: http://bit.ly/2mwvHWN
 
 commands:
   areaSpawner:
-    description: Main command for AreaSpawner
+    description: Admin command for AreaSpawner
     aliases: [as]
-    usage: /command help|version|reload
+    usage: Command was not registered properly
+  randomSpawn:
+    description: User command for AreaSpawner
+    aliases: [rs, rspawn]
+    usage: Command was not registered properly
 
 permissions:
   areaSpawner.version:
@@ -19,9 +23,25 @@ permissions:
   areaSpawner.reload:
     description: Allows you to reload the plugin
     default: op
+  areaSpawner.list:
+    description: Allows you to list safe spawn locations per world.
+    default: op
+  areaSpawner.regenerate:
+    description: Allows you to regenerate safe spawn locations
+    default: op
+  areaSpawner.automatic:
+    description: Allows you to be automatically teleported.
+    default: op
+  areaSpawner.travel:
+    description: Allows you to teleport manually using the travel command.
+    default: op
   areaSpawner.*:
     description: Gives access to every permission available
     default: op
     children:
       areaSpawner.version: true
       areaSpawner.reload: true
+      areaSpawner.list: true
+      areaSpawner.regenerate: true
+      areaSpawner.automatic: true
+      areaSpawner.travel: true
