@@ -35,6 +35,8 @@ public class Settings {
     private boolean topToBottom;
     private boolean nonWhiteListSafe;
     private boolean checkPastSurface;
+    private boolean checkSafetyOnUse;
+    private boolean deleteOnUnsafe;
     private int cachedLocationsAmount;
     private int findSafeLocationAttempts;
     private int airGapAbove;
@@ -73,6 +75,8 @@ public class Settings {
         this.topToBottom = config.getBoolean("top to bottom");
         this.nonWhiteListSafe = config.getBoolean("non-whitelist are safe");
         this.checkPastSurface = config.getBoolean("check past surface");
+        this.checkSafetyOnUse = config.getBoolean("re-check for safety on use");
+        this.deleteOnUnsafe = config.getBoolean("delete location on unsafe");
 
         this.findSafeLocationAttempts = config.getInt("safe spawn attempts");
         this.cachedLocationsAmount = config.getInt("amount of cached spawns");
@@ -160,6 +164,14 @@ public class Settings {
 
     public boolean isNotCheckPastSurface(){
         return !checkPastSurface;
+    }
+
+    public boolean isCheckSafetyOnUse(){
+        return checkSafetyOnUse;
+    }
+
+    public boolean isDeleteOnUnsafe(){
+        return deleteOnUnsafe;
     }
 
     public int getFindSafeLocationAttempts(){

@@ -122,7 +122,7 @@ public final class MainCommand implements CommandExecutor {
                 return true;
             }
             send(sender, regenerating);
-            RandomSpawnCache.getInstance().createNewSafeSpawns();
+            RandomSpawnCache.getInstance().createSafeSpawns(true);
 
 
 

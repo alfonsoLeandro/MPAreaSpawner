@@ -41,8 +41,8 @@ spawn world: world
 # spawn below bedrock and fall into the void.
 spawn zone:
   clamp to limits: true
-  default-to-multiverse: false
-  default-to-essentials: false
+  default-to-multiverse: false #TODO
+  default-to-essentials: false #TODO
 
   x center: 0
   y center: 128
@@ -119,29 +119,29 @@ check past surface: true
 ###############
 
 # Should players be teleported to a new location when respawning?
-spawn on death: true
+spawn on death: true #TODO
 
 # Should players be teleported to a new location when first joining the server?
-spawn on first join: true
+spawn on first join: true #TODO
 
 # Should players be teleported to their bed when respawning? This will be ignored if they don't have a bed.
-spawn on bed: true
+spawn on bed: true #TODO
 
 # Should players need a permission node for being randomly teleported? This will only affect automatic random
 # spawning. random spawn command needs a different permission. The permission node for this settings is
 # "areaSpawner.automatic"
-use permission: false
+use permission: false #TODO
 
 ###############
 # Essentials  #
 ###############
 
 # Should players be teleported to home instead of random spawn on-death
-essentials home teleport: true
+essentials home teleport: true #TODO
 
 # Should AreaSpawner set the user's Essentials home 'home' on first-join
 # random spawn?
-essentials home on first spawn: true
+essentials home on first spawn: true #TODO
 
 ###############
 #   Caching   #
@@ -180,7 +180,7 @@ delete location on unsafe: true
 # when attempting to spawn players at a cache entry.
 # Highly recommended as the location could have become unsafe since it was
 # last cached.
-re check for safety on use: true
+re-check for safety on use: true
 
 
 ##################
@@ -190,22 +190,22 @@ re check for safety on use: true
 # Should the "/travel" command be enabled for players to use?
 # Requires "areaSpawner.travel" permission.
 # Changes to this field will need a plugin restart.
-travel enabled: true
+travel enabled: true #TODO
 
 # How much time between "/travel" uses? Set to 0 disable.
 # s -> Seconds; m -> Minutes; h -> Hours; d -> Days.
 # Any incorrect input will be detected as 0s (disabled)
-travel cooldown: 10s
+travel cooldown: 10s #TODO
 
 # Will remove "areaSpawner.travel" permission from players that run the "/travel" command successfully.
 # Requires Vault.
-remove permission on travel: false
+remove permission on travel: false #TODO
 
 # How much will a player be charged in order to run the "/travel" command successfully?
 # Set to 0 to disable. Requires Vault and an economy plugin to be installed on the server.
 # You can also opt-to instead use my MPCommandSettings plugin to have command charges and cooldowns
 # all in one place. spigotmc.org/resources/mp-command-settings.72098
-travel cost: 0
+travel cost: 0 #TODO
 
 # Will set an Essentials home on the traveled location if none set for the player before.
-home on travel: false
+home on travel: false #TODO

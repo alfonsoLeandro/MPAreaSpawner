@@ -19,7 +19,7 @@ import com.popupmc.areaspawner.AreaSpawner;
 import com.popupmc.areaspawner.utils.Settings;
 import com.popupmc.areaspawner.utils.ConsoleLogger;
 import org.bukkit.*;
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -51,10 +51,16 @@ public class RandomSpawnCache {
     /**
      * The runnable that will create the safe locations.
      */
-    final private BukkitRunnable runnable = new BukkitRunnable() {
+    final private BukkitRunnable createSafeLocationsAsync = new BukkitRunnable() {
         @Override
         public void run() {
             createSafeLocations();
+        }
+    };
+    final private BukkitRunnable createNewSingleLocationAsync = new BukkitRunnable() {
+        @Override
+        public void run() {
+            replaceLocation();
         }
     };
 
@@ -66,8 +72,13 @@ public class RandomSpawnCache {
     private RandomSpawnCache(AreaSpawner plugin){
         this.plugin = plugin;
         this.spawnLocations = new ArrayList<>();
-        createNewSafeSpawns();
-        ConsoleLogger.debug("Cache successfully initialized");
+        if(Settings.getInstance().isCacheEnabled()) {
+            new BukkitRunnable() {public void run() {loadFromFile();}}.runTaskAsynchronously(plugin);
+            createSafeSpawns(false);
+            ConsoleLogger.send("Cache successfully initialized");
+        }else{
+            ConsoleLogger.send("&eWARNING &f- Location cache is disabled. Locations will be calculated on the spot, players may take a while to respawn depending on your other settings.");
+        }
     }
 
 
@@ -75,8 +86,9 @@ public class RandomSpawnCache {
     /**
      * Empties the safe spawn locations list and fills it with new locations (async).
      */
-    public void createNewSafeSpawns(){
-        runnable.runTaskAsynchronously(plugin);
+    public void createSafeSpawns(boolean clear){
+        if(clear) spawnLocations = new ArrayList<>();
+        createSafeLocationsAsync.runTaskAsynchronously(plugin);
     }
 
 
@@ -87,21 +99,29 @@ public class RandomSpawnCache {
      * or no spawn locations were loaded for the given world.
      */
     public Location getSafeSpawn(){
-        Location location = spawnLocations.get(new Random().nextInt(spawnLocations.size()));
+        Random r = new Random();
+        Settings settings = Settings.getInstance();
+
+        Location location = spawnLocations.get(r.nextInt(spawnLocations.size()));
+
+        if(settings.isCheckSafetyOnUse()) {
+            while (!isValidLocation(location, settings.getForbiddenRegion())) {
+                if(settings.isDeleteOnUnsafe()) {
+                    ConsoleLogger.debug("&cA previously considered safe location is no longer safe, generating a new one in replacement.");
+                    spawnLocations.remove(location);
+                    createNewSingleLocationAsync.runTaskAsynchronously(plugin);
+                }
+                location = spawnLocations.get(r.nextInt(spawnLocations.size()));
+            }
+        }
+
         ConsoleLogger.debug("&eA location has been used");
 
-        if(Settings.getInstance().isReplaceUsedLocation()) {
+        if(settings.isReplaceUsedLocation()) {
             ConsoleLogger.debug("&eGenerating a new location in replacement");
 
             spawnLocations.remove(location);
-
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    replaceLocation();
-                }
-
-            }.runTaskAsynchronously(plugin);
+            createNewSingleLocationAsync.runTaskAsynchronously(plugin);
         }
 
 
@@ -162,11 +182,11 @@ public class RandomSpawnCache {
         Region allowed = settings.getAllowedRegion();
         Region forbidden = settings.getForbiddenRegion();
         int amount = settings.getCachedLocationsAmount();
+        int i = spawnLocations.size()+1;
+        int added = 0;
 
-        spawnLocations = new ArrayList<>();
 
-
-        for (int i = 1; i <= amount; i++) {
+        for (;i <= amount; i++) {
             ConsoleLogger.debug("&eAttempting to add location number "+i);
 
             Location loc = allowed.generateNewLocation(forbidden);
@@ -176,6 +196,7 @@ public class RandomSpawnCache {
             }else {
                 ConsoleLogger.debug("&aLocation number "+i+" successfully added!");
                 spawnLocations.add(loc);
+                added++;
             }
 
             try {
@@ -187,7 +208,7 @@ public class RandomSpawnCache {
         }
 
 
-        ConsoleLogger.send("&aSuccessfully added "+spawnLocations.size()+" safe spawn locations");
+        ConsoleLogger.send("&aSuccessfully added "+added+" new safe spawn locations");
 
     }
 
@@ -209,35 +230,50 @@ public class RandomSpawnCache {
         //Steps for getting a safe location:
         // 1. y is greater than 0 and lesser than 255.
         // 2. x and z are within the spawn region and outside no-spawn region.
-        // 3. there is 2 block air gap above location.
+        // 3. there is a block air gap above location.
         // 4. block is not in blacklist.
         // 5. block is in whitelist or blocks not in whitelist are safe.
-        FileConfiguration config = plugin.getConfigYaml().getAccess();
+        Settings settings = Settings.getInstance();
+        String blockType = loc.getBlock().getType().toString();
 
         if(loc.getY() < 1 || loc.getY() > 255){
             ConsoleLogger.send("&cNo non-air block found.");
             return false;
         }
-        if(forbidden.contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())){
+        if(forbidden.contains2D(loc.getBlockX(), loc.getBlockZ())){
             ConsoleLogger.debug("&cLocation is in no-spawn region.");
             return false;
         }
-        if(!loc.clone().add(0,1,0).getBlock().getType().equals(Material.AIR) || !loc.clone().add(0,2,0).getBlock().getType().equals(Material.AIR)){
-            ConsoleLogger.debug("&cNo 2 block high air gap found.");
+        if(hasAirGap(loc)){
+            ConsoleLogger.debug("&cThe air gap was not tall enough, or there were none at all.");
             return false;
         }
-        if(config.getBoolean("config.blocks.blacklist.enabled") && config.getStringList("config.blocks.blacklist.list").contains(loc.getBlock().getType().toString())){
-            ConsoleLogger.debug("&cBlock "+loc.getBlock().getType().toString()+" is in blacklist.");
+        if(settings.getBlockBlackList().contains(blockType)){
+            ConsoleLogger.debug("&cBlock "+blockType+" is in blacklist.");
             return false;
         }
-        if(!config.getBoolean("config.blocks.whitelist.non-whitelist are safe") && !config.getStringList("config.blocks.whitelist.list").contains(loc.getBlock().getType().toString())){
-            ConsoleLogger.debug("&cBlock "+loc.getBlock().getType().toString()+" is not in whitelist.");
+        if(!settings.getBlockWhiteList().contains(blockType) && !settings.isNonWhiteListSafe()){
+            ConsoleLogger.debug("&cBlock "+blockType+" is not in whitelist and non-whitelist are non-safe.");
             return false;
         }
 
 
         return true;
     }
+
+    private boolean hasAirGap(Location loc){
+        int airGap = Settings.getInstance().getAirGapAbove();
+
+        for (int i = 1; i <= airGap ; i++) {
+            if(!loc.getBlock().getRelative(BlockFace.UP, i).getType().equals(Material.AIR)){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
 
     /**
      * Saves the locations in cache to the cache file.
@@ -256,14 +292,33 @@ public class RandomSpawnCache {
      */
     public void loadFromFile(){
         //TODO: md5 hash?
-        ConfigurationSection cache = plugin.getCacheYaml().getAccess().getConfigurationSection("cache");
+        FileConfiguration cache = plugin.getCacheYaml().getAccess();
+        ConsoleLogger.debug("&fLoading locations from cache file...");
 
         //If no cache section is found
-        if(cache == null) return;
-
-        for (String worldName : cache.getKeys(false)) {
-            //TODO: load spawns from cache file, verify them and if valid add them.
+        if(!cache.contains("cache")){
+            ConsoleLogger.debug("&cNo locations were found. Creating new ones instead.");
+            return;
         }
+
+        List<Location> locations = (List<Location>) cache.getList("cache");
+
+        ConsoleLogger.debug("&aFound &f"+locations.size()+"&a locations to load.");
+
+        for (Location loc : locations){
+            if(isValidLocation(loc, Settings.getInstance().getForbiddenRegion())){
+                spawnLocations.add(loc);
+                ConsoleLogger.debug("&aAdded a location from the cache file.");
+            }else{
+                ConsoleLogger.debug("&cA location in the cache file was not safe and therefore not added to the spawn list.");
+            }
+        }
+
+        ConsoleLogger.debug("&fFinished loading locations from cache file.");
+        ConsoleLogger.debug("&f"+spawnLocations.size()+"/"+locations.size()+" safe locations were loaded from the cache file");
+
+        cache.set("cache", null);
+        plugin.getCacheYaml().save();
     }
 
 
