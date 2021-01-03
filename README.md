@@ -7,10 +7,10 @@ MPAreaSpawner is an open-source minecraft plugin by lelesape and sponsored by [D
 1. [Features](#features)
 2. [Installation](#installation)
 3. [Usage](#usage)
-4. [About the author](#author)
-5. [About the sponsor](#sponsor)
-5. [License](#license)
-6. [Wiki](../../wiki)
+4. [About the sponsor](#sponsor)
+5. [About the author](#author)
+6. [License](#license)
+7. [Wiki](../../wiki)
   
   
 <a name="features"></a>
@@ -33,22 +33,21 @@ MPAreaSpawner is an open-source minecraft plugin by lelesape and sponsored by [D
 ## Usage
 You can find this info in the wiki page. [Usage](https://github.com/alfonsoLeandro/MPAreaSpawner/wiki/Usage)
 
+<a name="sponsor"></a>
+## About the sponsor
+**DarkPrincess** is the admin of *PopupMC* and the sponsor to several plugins the server uses. PopupMC likes to invest in high-quality plugins which they can proudly put their name on while simulatinously financially supporting developers and overseeing the projects.
+
+You can connect to PopupMC at this address: `mc.popupmc.com` and join their Discord server [here](https://discord.gg/ru3Hk9Vfny)
 
 
 <a name="author"></a>
 ## About the author
 My name is Leandro Alfonso, I am 18 years old and I live in Uruguay. I am currently a software engineering student at [UCU](https://ucu.edu.uy).
 If you have any issues or doubts do not hesitate to contact me by the following means:
- - [Gmail](mailto:leandroalfonsoporley@gmail.com)
- - Discord (lelesape#3612)
- - [Spigot](https://www.spigotmc.org/members/lelesape.270057/)
- 
- 
-<a name="sponsor"></a>
-## About the sponsor
-**DarkPrincess** is the admin of *PopupMC* and the sponsor to several plugins the server uses. PopupMC likes to invest in high-quality plugins which they can proudly put their name on while simulatinously financially supporting developers and overseeing the projects.
+- [Gmail](mailto:leandroalfonsoporley@gmail.com)
+- Discord (lelesape#3612)
+- [Spigot](https://www.spigotmc.org/members/lelesape.270057/)
 
-You can connect to PopupMC at this address: `mc.popupmc.com` and join their Discord server [here](https://discord.gg/ru3Hk9Vfny)
 
 
 <a name="license"></a>
