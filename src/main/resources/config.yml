@@ -32,19 +32,21 @@ debug: true
 spawn world: world
 
 # The spawn range players will be randomly spawned within
-# If x-loc, y-loc, or z-loc are -1, defaults to existing spawn location
+# If x center, y center, or z center are -1, defaults to the given world's spawn location
 # Radius is number of blocks outward from that point
 # clamp-to-limits makes sure the values don't fall outside valid areas, suggest to always have enabled
 # If multiverse or essentials is enabled, -1 location values will use the spawn point in those plugins. Otherwise -1
-# uses the vanilla/base game spawn point location
+# uses the vanilla/base game spawn point location.
+# Please take into account that if the result of doing "y center" - "y range" is lower than 0, players will be able to
+# spawn below bedrock and fall into the void.
 spawn zone:
   clamp to limits: true
   default-to-multiverse: false
   default-to-essentials: false
 
-  x-loc: 0
-  y-loc: 128
-  z-loc: 0
+  x center: 0
+  y center: 128
+  z center: 0
   x range: 10_000_000
   y range: 128
   z range: 10_000_000
@@ -53,6 +55,8 @@ spawn zone:
 # cannot spawn in. They should be smaller than the spawn zones and be inside them.
 no spawn zone:
   enabled: true
+  x center: 0
+  z center: 0
   x range: 8_000_000
   z range: 8_000_000
 
@@ -104,11 +108,11 @@ air gap above: 2
 # blocks possible (often in the deepest caves).
 top to bottom: true
 
-# If this is true, and top-to-bottom is also true, if the surface block is not
-# ok (such as lakes) it will go past the surface and continue to try to find a
-# safe block (like caves under the lake)
-# Defaults to stop at the surface block
-check past surface: false
+# If set to true, and the surface block is not ok (such as lakes) it will
+# continue to try to find a safe block (like caves under the lake)
+# Defaults to continue until the final Y value.
+# WARNING: setting this to false and setting the spawn zone y values further than
+check past surface: true
 
 ###############
 #  Spawning   #
@@ -149,9 +153,15 @@ essentials home on first spawn: true
 # every time one is needed (not recommended).
 enable cache: true
 
+# The amount of time in millis to wait in between locations when generating locations for the cache.
+time between generating locations: 5000
+
 # Number of spawns to calculate and save in the cache.
 # The amount of spawns should not affect your server performance since spawn calculation is made async.
-amount of cached spawns: 5000
+# The bigger your server, the more locations in cache you want, sometimes it's not necessary to have loads of locations
+# in memory ready to be used, if you have a server with 25 players, rarely those 25 players will die at the same time.
+# Recommended is 2*(player base).
+amount of cached spawns: 10
 
 # Number of attempts to calculate a safe location until giving up and calculating the next one.
 safe spawn attempts: 25
@@ -163,6 +173,7 @@ delete location on use: false
 
 # When a location that was previously considered safe but it is no longer safe
 # should AreaSpawner delete them and generate a new one or just not use it?
+# Definitely recommended.
 delete location on unsafe: true
 
 # Should AreaSpawner check for safety anyways even though it's been cached

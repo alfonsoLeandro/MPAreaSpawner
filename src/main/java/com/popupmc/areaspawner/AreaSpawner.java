@@ -17,6 +17,7 @@ package com.popupmc.areaspawner;
 
 import com.popupmc.areaspawner.commands.MainCommand;
 import com.popupmc.areaspawner.spawn.RandomSpawnCache;
+import com.popupmc.areaspawner.utils.Settings;
 import com.popupmc.areaspawner.utils.YamlFile;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -41,6 +42,7 @@ public final class AreaSpawner extends JavaPlugin {
     private YamlFile configYaml;
     private YamlFile messagesYaml;
     private YamlFile cacheYaml;
+    private YamlFile cooldownYaml;
 
     /**
      * Sends a message to the console, with colors and prefix added.
@@ -61,6 +63,8 @@ public final class AreaSpawner extends JavaPlugin {
         send("&fJoin my discord server at &chttps://discordapp.com/invite/ZznhQud");
         send("Please consider subscribing to my yt channel: &c" + pdfFile.getWebsite());
         reloadFiles();
+        Settings.createInstance(this);
+        checkDangerousSettings();
         RandomSpawnCache.createInstance(this);
         registerEvents();
         registerCommands();
@@ -127,6 +131,7 @@ public final class AreaSpawner extends JavaPlugin {
         configYaml = new YamlFile(this, "config.yml");
         messagesYaml = new YamlFile(this, "messages.yml");
         cacheYaml = new YamlFile(this, "cache.yml");
+        cooldownYaml = new YamlFile(this, "travel cooldown.yml");
     }
 
 
@@ -153,7 +158,37 @@ public final class AreaSpawner extends JavaPlugin {
         }
 
         mainCommand.setExecutor(new MainCommand(this));
+    }
 
+    private void checkDangerousSettings(){
+        Settings fields = Settings.getInstance();
+
+        if(fields.getWorldName() == null || fields.getWorld() == null){
+            send("&cERROR &f- World is null, please check your world name in config");
+            send("&fDisabling AreaSpawner");
+            setEnabled(false);
+            return;
+        }
+        if(fields.getForbiddenRegion().contains(fields.getAllowedRegion())){
+            send("&cERROR &f- The safe region spawn is inside and smaller than the forbidden region spawn");
+            send("&fDisabling AreaSpawner");
+            setEnabled(false);
+            return;
+        }
+
+
+        if(!getConfig().getBoolean("spawn zone.clamp to limits")){
+            send("&eWARNING &f- Clamp to limits is set to false in config, players may be able to spawn off limits in some cases.");
+        }
+        if(getConfig().getInt("air gap above") < 2){
+            send("&eWARNING &f- Air gap above is set to a value lower than 2 (player height), players may suffocate in walls.");
+        }
+        if(!getConfig().getBoolean("enable cache")){
+            send("&eWARNING &f- Location cache is disabled. Locations will be calculated on the spot, players may take a while to respawn depending on your other settings.");
+        }
+        if(!getConfig().getBoolean("re check for safety on use")){
+            send("&eWARNING &f- Locations' safety is not checked once again on use. Players might be teleported to unsafe locations that were considered safe.");
+        }
     }
 
     /**
@@ -187,6 +222,14 @@ public final class AreaSpawner extends JavaPlugin {
      */
     public YamlFile getCacheYaml(){
         return this.cacheYaml;
+    }
+
+    /**
+     * Get the travel cooldown YamlFile.
+     * @return The YamlFile containing the travel cooldown fileConfiguration.
+     */
+    public YamlFile getCooldownYaml(){
+        return this.cooldownYaml;
     }
 
 

@@ -17,6 +17,7 @@ package com.popupmc.areaspawner.commands;
 
 import com.popupmc.areaspawner.AreaSpawner;
 import com.popupmc.areaspawner.spawn.RandomSpawnCache;
+import com.popupmc.areaspawner.utils.Settings;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -26,7 +27,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -110,6 +110,7 @@ public final class MainCommand implements CommandExecutor {
             }
             plugin.reloadFiles();
             loadMessages();
+            Settings.getInstance().reloadFields();
             RandomSpawnCache.getInstance().reValidateSpawns();
             send(sender, reloaded);
 
@@ -131,12 +132,11 @@ public final class MainCommand implements CommandExecutor {
                 return true;
             }
             RandomSpawnCache rsp = RandomSpawnCache.getInstance();
-            HashMap<String, List<Location>> locations = rsp.getLocationsInCache();
+            List<Location> locations = rsp.getLocationsInCache();
 
             send(sender, locationsList);
-            for(String worldName : locations.keySet()) {
-                send(sender, worldName+": "+locations.get(worldName).size()+" locations");
-            }
+            send(sender, locations.size()+" locations");
+
 
 
         //TEMP - Used for testing
@@ -150,7 +150,7 @@ public final class MainCommand implements CommandExecutor {
                 return true;
             }
             RandomSpawnCache rsp = RandomSpawnCache.getInstance();
-            ((Player)sender).teleport(rsp.getSafeSpawn(((Player) sender).getWorld().getName()));
+            ((Player)sender).teleport(rsp.getSafeSpawn());
             send(sender, "&aTeleported!");
 
 
