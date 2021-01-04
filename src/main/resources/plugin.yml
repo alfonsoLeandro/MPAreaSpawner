@@ -35,6 +35,9 @@ permissions:
   areaSpawner.travel:
     description: Allows you to teleport manually using the travel command.
     default: op
+  areaSpawner.cooldown.bypass:
+    description: Allows a player to bypass travel command cooldowns when these are enabled.
+    default: op
   areaSpawner.*:
     description: Gives access to every permission available
     default: op
@@ -45,3 +48,4 @@ permissions:
       areaSpawner.regenerate: true
       areaSpawner.automatic: true
       areaSpawner.travel: true
+      areaSpawner.cooldown.bypass: true

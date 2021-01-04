@@ -48,7 +48,7 @@ spawn zone:
   y center: 128
   z center: 0
   x range: 10_000_000
-  y range: 128
+  y range: 127
   z range: 10_000_000
 
 # The no spawn zone can be disabled. These are the zones where players
@@ -110,9 +110,10 @@ top to bottom: true
 
 # If set to true, and the surface block is not ok (such as lakes) it will
 # continue to try to find a safe block (like caves under the lake)
-# Defaults to continue until the final Y value.
-# WARNING: setting this to false and setting the spawn zone y values further than
-check past surface: true
+# Defaults to false.
+# WARNING: if this is set to false and the y values are higher than 256, it will constantly fail
+# to find a safe location. You will recognize in console when this happens, messages saying "No non-air block found".
+check past surface: false
 
 ###############
 #  Spawning   #
@@ -195,6 +196,7 @@ travel enabled: true #TODO
 # How much time between "/travel" uses? Set to 0 disable.
 # s -> Seconds; m -> Minutes; h -> Hours; d -> Days.
 # Any incorrect input will be detected as 0s (disabled)
+# Permission to bypass cooldowns is "areaSpawner.cooldown.bypass"
 travel cooldown: 10s #TODO
 
 # Will remove "areaSpawner.travel" permission from players that run the "/travel" command successfully.
