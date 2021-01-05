@@ -57,6 +57,9 @@ public class RandomSpawnCache {
             createSafeLocations();
         }
     };
+    /**
+     * The runnable that will create a single location.
+     */
     final private BukkitRunnable createNewSingleLocationAsync = new BukkitRunnable() {
         @Override
         public void run() {

@@ -194,10 +194,10 @@ re-check for safety on use: true
 travel enabled: true #TODO
 
 # How much time between "/travel" uses? Set to 0 disable.
-# s -> Seconds; m -> Minutes; h -> Hours; d -> Days.
+# S -> Seconds; M -> Minutes; H -> Hours; D -> Days.
 # Any incorrect input will be detected as 0s (disabled)
 # Permission to bypass cooldowns is "areaSpawner.cooldown.bypass"
-travel cooldown: 10s #TODO
+travel cooldown: 10S #TODO
 
 # Will remove "areaSpawner.travel" permission from players that run the "/travel" command successfully.
 # Requires Vault.
