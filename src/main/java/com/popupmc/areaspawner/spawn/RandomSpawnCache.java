@@ -68,9 +68,9 @@ public class RandomSpawnCache {
         this.plugin = plugin;
         this.spawnLocations = new ArrayList<>();
         if(Settings.getInstance().isCacheEnabled()) {
+            ConsoleLogger.send("Cache successfully initialized");
             loadFromFile();
             createSafeSpawns(false);
-            ConsoleLogger.send("Cache successfully initialized");
         }else{
             ConsoleLogger.send("&eWARNING &f- Location cache is disabled. Locations will be calculated on the spot, players may take a while to respawn depending on your other settings.");
         }
