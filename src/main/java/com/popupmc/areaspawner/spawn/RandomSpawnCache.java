@@ -213,7 +213,7 @@ public class RandomSpawnCache {
 
             @Override
             public void run(){
-                if(locationNumber[0] >= amountOfLocationsToAdd){
+                if(locationNumber[0] > amountOfLocationsToAdd){
                     showAddedLocations(addedLocations[0], addedLocations[1]);
                     cancel();
                     return;
