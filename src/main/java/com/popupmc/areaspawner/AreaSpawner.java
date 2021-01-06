@@ -76,11 +76,11 @@ public final class AreaSpawner extends JavaPlugin {
      */
     @Override
     public void onDisable() {
+        RandomSpawnCache.getInstance().saveToFile();
         send("&cDisabled&f. Version: &e" + version);
         send("&fThank you for using my plugin! &" + color + pdfFile.getName() + "&f By " + pdfFile.getAuthors().get(0));
         send("&fJoin my discord server at &chttps://discordapp.com/invite/ZznhQud");
         send("Please consider subscribing to my yt channel: &c" + pdfFile.getWebsite());
-        RandomSpawnCache.getInstance().saveToFile();
     }
 
 //TODO: Update checker
@@ -160,7 +160,7 @@ public final class AreaSpawner extends JavaPlugin {
         mainCommand.setExecutor(new MainCommand(this));
     }
 
-    private void checkDangerousSettings(){
+    public void checkDangerousSettings(){
         Settings fields = Settings.getInstance();
 
         if(fields.getWorldName() == null || fields.getWorld() == null){

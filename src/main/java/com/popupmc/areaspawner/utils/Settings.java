@@ -30,13 +30,15 @@ public class Settings {
     final private AreaSpawner plugin;
 
     private boolean debug;
-    private boolean replaceUsedLocation;
+    private boolean removeUsedLocation;
     private boolean cacheEnabled;
+    private boolean saveCacheToFile;
     private boolean topToBottom;
     private boolean nonWhiteListSafe;
     private boolean checkPastSurface;
     private boolean checkSafetyOnUse;
     private boolean deleteOnUnsafe;
+    private boolean replaceRemovedLocation;
     private int cachedLocationsAmount;
     private int findSafeLocationAttempts;
     private int airGapAbove;
@@ -70,18 +72,25 @@ public class Settings {
         FileConfiguration config = plugin.getConfig();
 
         this.debug = config.getBoolean("debug");
-        this.replaceUsedLocation = config.getBoolean("delete location on use");
+        this.removeUsedLocation = config.getBoolean("delete location on use");
         this.cacheEnabled = config.getBoolean("enable cache");
+        this.saveCacheToFile = config.getBoolean("save cache to file");
         this.topToBottom = config.getBoolean("top to bottom");
         this.nonWhiteListSafe = config.getBoolean("non-whitelist are safe");
         this.checkPastSurface = config.getBoolean("check past surface");
         this.checkSafetyOnUse = config.getBoolean("re-check for safety on use");
         this.deleteOnUnsafe = config.getBoolean("delete location on unsafe");
+        this.replaceRemovedLocation = config.getBoolean("replace location on remove");
 
         this.findSafeLocationAttempts = config.getInt("safe spawn attempts");
         this.cachedLocationsAmount = config.getInt("amount of cached spawns");
         this.airGapAbove = config.getInt("air gap above");
-        this.timeBetweenLocations = config.getInt("time between generating locations");
+        String timeString = config.getString("time between generating locations");
+        if(timeString != null && timeString.length() > 1) {
+            this.timeBetweenLocations = Time.getTicks(Integer.parseInt(timeString.substring(0, timeString.length() - 1)), TimeUnit.getByAlias(timeString.charAt(timeString.length() - 1)));
+        }else{
+            this.timeBetweenLocations = Time.getTicks(3, TimeUnit.SECONDS);
+        }
 
         this.prefix = config.getString("prefix");
         this.worldName = config.getString("spawn world");
@@ -102,19 +111,21 @@ public class Settings {
         boolean clampToLimits = config.getBoolean("spawn zone.clamp to limits");
 
         int xCenter = clampToLimits ? Math.min(29_999_984, config.getInt("spawn zone.x center")) : config.getInt("spawn zone.x center");
-        int yCenter = clampToLimits ? Math.min(256, config.getInt("spawn zone.y center")) : config.getInt("spawn zone.y center");
+        int yCenter = clampToLimits ? Math.min(255, config.getInt("spawn zone.y center")) : config.getInt("spawn zone.y center");
         int zCenter = clampToLimits ? Math.min(29_999_984, config.getInt("spawn zone.z center")) : config.getInt("spawn zone.z center");
 
         int xRange = clampToLimits ? Math.min(29_999_984, config.getInt("spawn zone.x range")) : config.getInt("spawn zone.x range");
-        int yRange = clampToLimits ? Math.min(256, config.getInt("spawn zone.y range")) : config.getInt("spawn zone.y range");
+        int yRange = clampToLimits ? Math.min(255, config.getInt("spawn zone.y range")) : config.getInt("spawn zone.y range");
         int zRange = clampToLimits ? Math.min(29_999_984, config.getInt("spawn zone.z range")) : config.getInt("spawn zone.z range");
 
         if(clampToLimits){
-            if(xCenter+xRange > 29_999_984 || xCenter-xRange < 29_999_984) xRange = 29_999_984 - xCenter;
+            if(xCenter+xRange > 29_999_984 || xCenter-xRange < -29_999_984) xRange = 29_999_984 - xCenter;
             if(yCenter+yRange > 256 || yCenter-yRange < 0) yRange = 128 - yCenter;
-            if(zCenter+zRange > 29_999_984 || zCenter-zRange < 29_999_984) zRange = 29_999_984 - zCenter;
+            if(zCenter+zRange > 29_999_984 || zCenter-zRange < -29_999_984) zRange = 29_999_984 - zCenter;
         }
 
+        ConsoleLogger.debug("Region final centers: "+xCenter+" "+yCenter+" "+zCenter);
+        ConsoleLogger.debug("Region final ranges: "+xRange+" "+yRange+" "+zRange);
 
         this.allowedRegion = Region.newRegionByRanges(xCenter, yCenter, zCenter,
                 xRange, yRange, zRange);
@@ -146,12 +157,16 @@ public class Settings {
         return debug;
     }
 
-    public boolean isReplaceUsedLocation(){
-        return replaceUsedLocation;
+    public boolean isRemoveUsedLocation(){
+        return removeUsedLocation;
     }
 
     public boolean isCacheEnabled(){
         return cacheEnabled;
+    }
+
+    public boolean isSaveCacheToFile(){
+        return saveCacheToFile;
     }
 
     public boolean isTopToBottom(){
@@ -172,6 +187,10 @@ public class Settings {
 
     public boolean isDeleteOnUnsafe(){
         return deleteOnUnsafe;
+    }
+
+    public boolean isReplaceRemovedLocation(){
+        return replaceRemovedLocation;
     }
 
     public int getFindSafeLocationAttempts(){

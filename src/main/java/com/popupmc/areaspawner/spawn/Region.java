@@ -18,7 +18,6 @@ package com.popupmc.areaspawner.spawn;
 
 import com.popupmc.areaspawner.utils.Settings;
 import com.popupmc.areaspawner.utils.ConsoleLogger;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -160,13 +159,7 @@ public class Region {
             making.setZ(r.nextInt(this.getMaxZ() - this.getMinZ()) + this.getMinZ());
             setYValue(making);
 
-            ConsoleLogger.debug("Y: "+making.getY());
-
-            //FixME: REMOVE
-            Bukkit.broadcastMessage("Block: " + making.getBlock().toString());
-
-
-            if(isValidLocation(making, forbidden)) {
+            if(isValidLocation(making, forbidden, this)) {
                 ConsoleLogger.debug("&aSafe valid location achieved!");
                 return making;
             }
@@ -243,7 +236,7 @@ public class Region {
      * @param forbidden The "forbidden" spawn region for this location's world.
      * @return true if the location passed every check.
      */
-    public boolean isValidLocation(Location loc, Region forbidden){
+    public static boolean isValidLocation(Location loc, Region forbidden, Region allowed){
         //Steps for getting a safe location:
         // 1. y is greater than 0 and lesser than 255.
         // 2. x and z are within the spawn region and outside no-spawn region.
@@ -254,14 +247,18 @@ public class Region {
         String blockType = loc.getBlock().getType().toString();
 
         if(loc.getY() < 1 || loc.getY() > 255){
-            ConsoleLogger.send("&cNo non-air block found.");
+            ConsoleLogger.debug("&cNo non-air, non-void block found.");
             return false;
         }
         if(forbidden.contains2D(loc.getBlockX(), loc.getBlockZ())){
             ConsoleLogger.debug("&cLocation is in no-spawn region.");
             return false;
         }
-        if(hasAirGap(loc)){
+        if(!allowed.contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())){
+            ConsoleLogger.debug("&cLocation is not in allowed region.");
+            return false;
+        }
+        if(!hasAirGap(loc)){
             ConsoleLogger.debug("&cThe air gap was not tall enough, or there were none at all.");
             return false;
         }
@@ -279,7 +276,7 @@ public class Region {
     }
 
 
-    private boolean hasAirGap(Location loc){
+    private static boolean hasAirGap(Location loc){
         int airGap = Settings.getInstance().getAirGapAbove();
 
         for (int i = 1; i <= airGap ; i++) {

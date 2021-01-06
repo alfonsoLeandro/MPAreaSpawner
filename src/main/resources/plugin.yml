@@ -23,8 +23,8 @@ permissions:
   areaSpawner.reload:
     description: Allows you to reload the plugin
     default: op
-  areaSpawner.list:
-    description: Allows you to list safe spawn locations per world.
+  areaSpawner.locations:
+    description: Allows you to see how many safe to spawn locations are currently stored in cache.
     default: op
   areaSpawner.regenerate:
     description: Allows you to regenerate safe spawn locations
@@ -44,7 +44,7 @@ permissions:
     children:
       areaSpawner.version: true
       areaSpawner.reload: true
-      areaSpawner.list: true
+      areaSpawner.locations: true
       areaSpawner.regenerate: true
       areaSpawner.automatic: true
       areaSpawner.travel: true

@@ -4,4 +4,4 @@ messages:
   unknown command: '&cUnknown command. &fTry /%command% help'
   reloaded: '&aFiles reloaded!'
   regenerating: '&fRegenerating every spawn location for every world in config...'
-  list of locations: '&fList of locations per world:'
+  number of locations: '&fThere are currently &c%locations% &flocations stored in cache.'

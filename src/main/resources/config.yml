@@ -154,8 +154,15 @@ essentials home on first spawn: true #TODO
 # every time one is needed (not recommended).
 enable cache: true
 
-# The amount of time in millis to wait in between locations when generating locations for the cache.
-time between generating locations: 5000
+# When the plugin is disabled or the server closes, sould AreaSpawner saves what was saved in the cache
+# to a cache file (cache.yml) to then be loaded when the plugin is enabled again?
+save cache to file: true
+
+# The amount of time to wait in between locations when generating locations for the cache.
+# S -> Seconds; M -> Minutes; H -> Hours; D -> Days.
+# If the unit is not S,M,H or D, it will count as S (seconds).
+# Any other incorrect input will be detected as 3S (3 seconds).
+time between generating locations: 5S
 
 # Number of spawns to calculate and save in the cache.
 # The amount of spawns should not affect your server performance since spawn calculation is made async.
@@ -167,10 +174,14 @@ amount of cached spawns: 10
 # Number of attempts to calculate a safe location until giving up and calculating the next one.
 safe spawn attempts: 25
 
-# When a spawnpoint is used, should AreaSpawner remove this location and generate a new one?
+# When a spawnpoint is used, should AreaSpawner remove this location?
 # Recommended if: the amount of cache spawns is not very high or you just don't want the possibility for
 # a player to spawn close to where another player spawned at all.
+# It is also recommended to have "replace location on remove" set to true if this is also set to true.
 delete location on use: false
+
+# When a location is removed, should AreaSpawn create a new safe location in its place?
+replace location on remove: true
 
 # When a location that was previously considered safe but it is no longer safe
 # should AreaSpawner delete them and generate a new one or just not use it?

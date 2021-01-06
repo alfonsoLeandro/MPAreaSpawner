@@ -19,7 +19,6 @@ import com.popupmc.areaspawner.AreaSpawner;
 import com.popupmc.areaspawner.spawn.RandomSpawnCache;
 import com.popupmc.areaspawner.utils.Settings;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -27,7 +26,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.util.List;
 
 /**
  * AreaSpawner's main command, contains admin commands, not intended for normal user interaction.
@@ -42,7 +40,7 @@ public final class MainCommand implements CommandExecutor {
     private String unknown;
     private String reloaded;
     private String regenerating;
-    private String locationsList;
+    private String locationsStored;
     private String commandList;
 
 
@@ -66,7 +64,7 @@ public final class MainCommand implements CommandExecutor {
         unknown = messages.getString("messages.unknown command");
         reloaded = messages.getString("messages.reloaded");
         regenerating = messages.getString("messages.regenerating");
-        locationsList = messages.getString("messages.list of locations");
+        locationsStored = messages.getString("messages.number of locations");
     }
 
     /**
@@ -85,7 +83,9 @@ public final class MainCommand implements CommandExecutor {
             send(sender,"&f/"+label+" version");
             send(sender,"&f/"+label+" reload");
             send(sender,"&f/"+label+" regenerate");
-            send(sender,"&f/"+label+" list");
+            send(sender,"&f/"+label+" locations");
+            send(sender,"&f/"+label+" stopCache");
+            send(sender,"&f/"+label+" getSettings");
 
 
         }else if(args[0].equalsIgnoreCase("version")) {
@@ -113,6 +113,7 @@ public final class MainCommand implements CommandExecutor {
             Settings.getInstance().reloadFields();
             RandomSpawnCache.getInstance().reValidateSpawns();
             send(sender, reloaded);
+            plugin.checkDangerousSettings();
 
 
 
@@ -126,17 +127,60 @@ public final class MainCommand implements CommandExecutor {
 
 
 
-        }else if(args[0].equalsIgnoreCase("list")) {
-            if(!sender.hasPermission("areaSpawner.list")) {
+        }else if(args[0].equalsIgnoreCase("locations")) {
+            if(!sender.hasPermission("areaSpawner.locations")) {
+                send(sender, noPerm);
+                return true;
+            }
+            send(sender, locationsStored
+                    .replace("%locations%", String.valueOf(RandomSpawnCache.getInstance().getLocationsInCache())));
+
+
+
+        }else if(args[0].equalsIgnoreCase("stopCache")) {
+            if(!sender.hasPermission("areaSpawner.stopCache")) {
                 send(sender, noPerm);
                 return true;
             }
             RandomSpawnCache rsp = RandomSpawnCache.getInstance();
-            List<Location> locations = rsp.getLocationsInCache();
+            int locations = rsp.getLocationsInCache();
 
-            send(sender, locationsList);
-            send(sender, locations.size()+" locations");
+            if(rsp.stopCache()){
+                send(sender, "&aThe cache process has been successfully stopped.");
+                send(sender, "&eThere are currently "+locations+" locations saved in cache.");
+            }else{
+                send(sender, "&cThe cache process was not running.");
+            }
 
+        }else if(args[0].equalsIgnoreCase("getSettings")) {
+            if(!sender.hasPermission("areaSpawner.getSettings")) {
+                send(sender, noPerm);
+                return true;
+            }
+            Settings settings = Settings.getInstance();
+
+            send(sender, "&cBooleans");
+            send(sender, "&fDebug: "+settings.isDebug());
+            send(sender, "&fReplace used locations: "+settings.isRemoveUsedLocation());
+            send(sender, "&fCache enabled: "+settings.isCacheEnabled());
+            send(sender, "&fCheck past surface: "+!settings.isNotCheckPastSurface());
+            send(sender, "&fCheck safety on use: "+settings.isCheckSafetyOnUse());
+            send(sender, "&fDelete on unsafe: "+settings.isDeleteOnUnsafe());
+            send(sender, "&cIntegers");
+            send(sender, "&fAttempts to find a safe location: "+settings.getFindSafeLocationAttempts());
+            send(sender, "&fAmount of locations to try and save to cache: "+settings.getCachedLocationsAmount());
+            send(sender, "&fTicks to wait between generating locations: "+settings.getTimeBetweenLocations());
+            send(sender, "&cStrings");
+            send(sender, "&fWorld name: "+settings.getWorldName());
+            send(sender, "&cRegions");
+            send(sender, "&fSpawn zone:");
+            send(sender, "X:"+settings.getAllowedRegion().getMinX()+","+settings.getAllowedRegion().getMaxX());
+            send(sender, "Y:"+settings.getAllowedRegion().getMinY()+","+settings.getAllowedRegion().getMaxY());
+            send(sender, "Z:"+settings.getAllowedRegion().getMinZ()+","+settings.getAllowedRegion().getMaxZ());
+            send(sender, "&fNo spawn zone:");
+            send(sender, "X:"+settings.getForbiddenRegion().getMinX()+","+settings.getForbiddenRegion().getMaxX());
+            send(sender, "Y:"+settings.getForbiddenRegion().getMinY()+","+settings.getForbiddenRegion().getMaxY());
+            send(sender, "Z:"+settings.getForbiddenRegion().getMinZ()+","+settings.getForbiddenRegion().getMaxZ());
 
 
         //TEMP - Used for testing
