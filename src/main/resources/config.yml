@@ -123,15 +123,15 @@ check past surface: false
 spawn on death: true
 
 # Should players be teleported to a new location when first joining the server?
-spawn on first join: true #TODO
+spawn on first join: true
 
 # Should players be teleported to their bed when respawning? This will be ignored if they don't have a bed.
-spawn on bed: true #TODO
+spawn on bed: true
 
 # Should players need a permission node for being randomly teleported? This will only affect automatic random
 # spawning. random spawn command needs a different permission. The permission node for this settings is
 # "areaSpawner.automatic"
-use permission: false #TODO
+use permission: false
 
 ###############
 # Essentials  #
@@ -142,7 +142,7 @@ essentials home teleport: true
 
 # Should AreaSpawner set the user's Essentials home 'home' on first-join
 # random spawn?
-essentials home on first spawn: true #TODO
+essentials home on first spawn: true
 
 ###############
 #   Caching   #

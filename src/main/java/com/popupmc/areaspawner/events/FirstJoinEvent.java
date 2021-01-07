@@ -1,5 +1,6 @@
 package com.popupmc.areaspawner.events;
 
+import com.popupmc.areaspawner.spawn.RandomSpawnCache;
 import com.popupmc.areaspawner.utils.Settings;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,10 +13,15 @@ public class FirstJoinEvent implements Listener {
         Settings settings = Settings.getInstance();
         if(!event.getPlayer().hasPlayedBefore() && settings.isSpawnOnFirstJoin()){
 
-            //Teleport.
-            if(settings.isEssentialsSetHomeOnFirstJoin()){
-                //TODO: Essentials set home.
+            if(!settings.isUseAutomaticPermission() || event.getPlayer().hasPermission("areaSpawner.automatic")){
+                //Teleport.
+                RandomSpawnCache.getInstance().teleport(event.getPlayer());
+
+                if(settings.isEssentialsSetHomeOnFirstJoin()){
+                    //TODO: Essentials set home.
+                }
             }
+
         }
     }
 }

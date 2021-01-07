@@ -37,11 +37,13 @@ public class PlayerDieEvent implements Listener {
 
         if(settings.isSpawnOnDeath()){
             if(!(event.isBedSpawn() && settings.isSpawnOnBed())){
-                if(settings.isEssentialsHomeOnRespawn() /*&& player tiene home*/){
+                if(settings.isEssentialsHomeOnRespawn() /*&& player tiene essentials home*/){
                     //TODO: Essentials home respawn
                 }else{
-                    event.setRespawnLocation(RandomSpawnCache.getInstance().getSafeSpawn());
-                    Logger.send(event.getPlayer(), plugin.getMessagesYaml().getAccess().getString("you have been teleported"));
+                    if(!settings.isUseAutomaticPermission() || event.getPlayer().hasPermission("areaSpawner.automatic")) {
+                        event.setRespawnLocation(RandomSpawnCache.getInstance().getSafeSpawn());
+                        Logger.send(event.getPlayer(), plugin.getMessagesYaml().getAccess().getString("you have been teleported"));
+                    }
                 }
             }
         }
