@@ -17,7 +17,7 @@ package com.popupmc.areaspawner.spawn;
 
 
 import com.popupmc.areaspawner.utils.Settings;
-import com.popupmc.areaspawner.utils.ConsoleLogger;
+import com.popupmc.areaspawner.utils.Logger;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -90,10 +90,10 @@ public class Region {
      * @param maxZ The second point's z coordinate.
      */
     public Region(int minX, int maxX, int minY, int maxY, int minZ, int maxZ){
-        ConsoleLogger.debug("New region created with the following coordinates");
-        ConsoleLogger.debug("X: "+minX+" - "+maxX);
-        ConsoleLogger.debug("Y: "+minY+" - "+maxY);
-        ConsoleLogger.debug("Z: "+minZ+" - "+maxZ);
+        Logger.debug("New region created with the following coordinates");
+        Logger.debug("X: "+minX+" - "+maxX);
+        Logger.debug("Y: "+minY+" - "+maxY);
+        Logger.debug("Z: "+minZ+" - "+maxZ);
         this.minX = minX;
         this.maxX = maxX;
         this.minY = minY;
@@ -153,14 +153,14 @@ public class Region {
 
         //Make x amount of attempts before giving up and calculating the next one
         for (int i = 1; i <= attempts ; i++) {
-            ConsoleLogger.debug("&eAttempt number " + i + " to generate location.");
+            Logger.debug("&eAttempt number " + i + " to generate location.");
 
             making.setX(r.nextInt(this.getMaxX() - this.getMinX()) + this.getMinX());
             making.setZ(r.nextInt(this.getMaxZ() - this.getMinZ()) + this.getMinZ());
             setYValue(making);
 
             if(isValidLocation(making, forbidden, this)) {
-                ConsoleLogger.debug("&aSafe valid location achieved!");
+                Logger.debug("&aSafe valid location achieved!");
                 return making;
             }
 
@@ -247,27 +247,27 @@ public class Region {
         String blockType = loc.getBlock().getType().toString();
 
         if(loc.getY() < 1 || loc.getY() > 255){
-            ConsoleLogger.debug("&cNo non-air, non-void block found.");
+            Logger.debug("&cNo non-air, non-void block found.");
             return false;
         }
         if(forbidden.contains2D(loc.getBlockX(), loc.getBlockZ())){
-            ConsoleLogger.debug("&cLocation is in no-spawn region.");
+            Logger.debug("&cLocation is in no-spawn region.");
             return false;
         }
         if(!allowed.contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())){
-            ConsoleLogger.debug("&cLocation is not in allowed region.");
+            Logger.debug("&cLocation is not in allowed region.");
             return false;
         }
         if(!hasAirGap(loc)){
-            ConsoleLogger.debug("&cThe air gap was not tall enough, or there were none at all.");
+            Logger.debug("&cThe air gap was not tall enough, or there were none at all.");
             return false;
         }
         if(settings.getBlockBlackList().contains(blockType)){
-            ConsoleLogger.debug("&cBlock "+blockType+" is in blacklist.");
+            Logger.debug("&cBlock "+blockType+" is in blacklist.");
             return false;
         }
         if(!settings.getBlockWhiteList().contains(blockType) && !settings.isNonWhiteListSafe()){
-            ConsoleLogger.debug("&cBlock "+blockType+" is not in whitelist and non-whitelist are non-safe.");
+            Logger.debug("&cBlock "+blockType+" is not in whitelist and non-whitelist are non-safe.");
             return false;
         }
 

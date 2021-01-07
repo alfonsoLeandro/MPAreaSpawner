@@ -2,6 +2,7 @@ messages:
   list of commands: '&6List of commands:'
   no permission: '&cNo permission'
   unknown command: '&cUnknown command. &fTry /%command% help'
-  reloaded: '&aFiles reloaded!'
+  reloaded: '&aPlugin reloaded!'
   regenerating: '&fRegenerating every spawn location for every world in config...'
   number of locations: '&fThere are currently &c%locations% &flocations stored in cache.'
+  you have been teleported: '&aYou have been teleported to a new random location.'

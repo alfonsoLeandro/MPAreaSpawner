@@ -41,8 +41,8 @@ spawn world: world
 # spawn below bedrock and fall into the void.
 spawn zone:
   clamp to limits: true
-  default-to-multiverse: false #TODO
-  default-to-essentials: false #TODO
+  default to multiverse: false
+  default to essentials: false
 
   x center: 0
   y center: 128
@@ -120,29 +120,29 @@ check past surface: false
 ###############
 
 # Should players be teleported to a new location when respawning?
-spawn on death: true #TODO
+spawn on death: true
 
 # Should players be teleported to a new location when first joining the server?
-spawn on first join: true #TODO
+spawn on first join: true
 
 # Should players be teleported to their bed when respawning? This will be ignored if they don't have a bed.
-spawn on bed: true #TODO
+spawn on bed: true
 
 # Should players need a permission node for being randomly teleported? This will only affect automatic random
 # spawning. random spawn command needs a different permission. The permission node for this settings is
 # "areaSpawner.automatic"
-use permission: false #TODO
+use permission: false
 
 ###############
 # Essentials  #
 ###############
 
 # Should players be teleported to home instead of random spawn on-death
-essentials home teleport: true #TODO
+essentials home teleport: true
 
 # Should AreaSpawner set the user's Essentials home 'home' on first-join
 # random spawn?
-essentials home on first spawn: true #TODO
+essentials home on first spawn: true
 
 ###############
 #   Caching   #

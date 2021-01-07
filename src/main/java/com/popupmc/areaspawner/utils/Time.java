@@ -20,4 +20,8 @@ public class Time {
     public static int getTicks(int amount, TimeUnit timeUnit){
         return amount * timeUnit.getMultiplier();
     }
+
+    public static int getTicks(int amount, char timeUnit){
+        return getTicks(amount, TimeUnit.getByAlias(timeUnit));
+    }
 }

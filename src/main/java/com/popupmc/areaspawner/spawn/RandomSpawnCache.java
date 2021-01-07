@@ -17,9 +17,10 @@ package com.popupmc.areaspawner.spawn;
 
 import com.popupmc.areaspawner.AreaSpawner;
 import com.popupmc.areaspawner.utils.Settings;
-import com.popupmc.areaspawner.utils.ConsoleLogger;
+import com.popupmc.areaspawner.utils.Logger;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -68,11 +69,11 @@ public class RandomSpawnCache {
         this.plugin = plugin;
         this.spawnLocations = new ArrayList<>();
         if(Settings.getInstance().isCacheEnabled()) {
+            Logger.send("Cache successfully initialized");
             loadFromFile();
             createSafeSpawns(false);
-            ConsoleLogger.send("Cache successfully initialized");
         }else{
-            ConsoleLogger.send("&eWARNING &f- Location cache is disabled. Locations will be calculated on the spot, players may take a while to respawn depending on your other settings.");
+            Logger.send("&eWARNING &f- Location cache is disabled. Locations will be calculated on the spot, players may take a while to respawn depending on your other settings.");
         }
     }
 
@@ -96,38 +97,51 @@ public class RandomSpawnCache {
         return true;
     }
 
+    /**
+     * Teleports a player to a safe spawn location and sends them the teleport message.
+     * @param player The player to teleport.
+     */
+    public void teleport(Player player){
+        player.teleport(getSafeSpawn());
+        Logger.send(player, plugin.getMessagesYaml().getAccess().getString("you have been teleported"));
+    }
+
 
 
     /**
-     * Gets a random element from the list of safeSpawns.
-     * @return A safe spawn ready for a player to spawn or null if no spawns were generated for the given world
-     * or no spawn locations were loaded for the given world.
+     * Gets a safe spawn point.
+     * @return A safe location ready for a player to spawn in, if the cache is disabled or the list of locations is
+     * empty, it will try to generate a safe location on the spot.
      */
     public Location getSafeSpawn(){
         Random r = new Random();
         Settings settings = Settings.getInstance();
 
-        Location location = spawnLocations.get(r.nextInt(spawnLocations.size()));
+        if(settings.isCacheEnabled() && !spawnLocations.isEmpty()) {
+            Location location = spawnLocations.get(r.nextInt(spawnLocations.size()));
 
-        if(settings.isCheckSafetyOnUse()) {
-            while (!Region.isValidLocation(location, settings.getForbiddenRegion(), settings.getAllowedRegion())) {
-                if(settings.isDeleteOnUnsafe()) {
-                    ConsoleLogger.debug("&cA previously considered safe location is no longer safe, generating a new one in replacement.");
-                    removeLocation(location);
+            if(settings.isCheckSafetyOnUse()) {
+                while (!Region.isValidLocation(location, settings.getForbiddenRegion(), settings.getAllowedRegion())) {
+                    if(settings.isDeleteOnUnsafe()) {
+                        Logger.debug("&cA previously considered safe location is no longer safe, generating a new one in replacement.");
+                        removeLocation(location);
+                    }
+                    location = spawnLocations.get(r.nextInt(spawnLocations.size()));
                 }
-                location = spawnLocations.get(r.nextInt(spawnLocations.size()));
             }
+
+            Logger.debug("&eA location has been used");
+
+            if(settings.isRemoveUsedLocation()) {
+                Logger.debug("&eRemoving the used location.");
+                removeLocation(location);
+            }
+            return location.clone().add(0.5,1,0.5);
         }
 
-        ConsoleLogger.debug("&eA location has been used");
-
-        if(settings.isRemoveUsedLocation()) {
-            ConsoleLogger.debug("&eRemoving the used location.");
-            removeLocation(location);
-        }
+        return settings.getAllowedRegion().generateNewLocation(settings.getForbiddenRegion());
 
 
-        return location.clone().add(0.5,1,0.5);
     }
 
 
@@ -143,9 +157,9 @@ public class RandomSpawnCache {
         Location loc = allowed.generateNewLocation(forbidden);
 
         if(loc == null){
-            ConsoleLogger.debug("&cFailed to add replacement location after "+settings.getFindSafeLocationAttempts()+" attempts");
+            Logger.debug("&cFailed to add replacement location after "+settings.getFindSafeLocationAttempts()+" attempts");
         }else {
-            ConsoleLogger.debug("&aReplacement location successfully added!");
+            Logger.debug("&aReplacement location successfully added!");
             spawnLocations.add(loc);
         }
     }
@@ -161,7 +175,7 @@ public class RandomSpawnCache {
         Settings settings = Settings.getInstance();
         for(Location loc : spawnLocations){
             if(!Region.isValidLocation(loc, settings.getForbiddenRegion(), settings.getAllowedRegion())){
-                ConsoleLogger.debug("&cA location has been detected as no longer safe.");
+                Logger.debug("&cA location has been detected as no longer safe.");
                 if(settings.isDeleteOnUnsafe()) {
                     removeLocation(loc);
                 }
@@ -179,9 +193,9 @@ public class RandomSpawnCache {
         Settings settings = Settings.getInstance();
 
         spawnLocations.remove(loc);
-        ConsoleLogger.debug("&aLocation successfully removed from the locations list");
+        Logger.debug("&aLocation successfully removed from the locations list");
         if(settings.isReplaceRemovedLocation()){
-            ConsoleLogger.debug("&eCreating a new location in replacement.");
+            Logger.debug("&eCreating a new location in replacement.");
             createNewSingleLocationAsync.runTaskAsynchronously(plugin);
         }
 
@@ -196,11 +210,11 @@ public class RandomSpawnCache {
         Settings settings = Settings.getInstance();
 
         if(!settings.isCacheEnabled()){
-            ConsoleLogger.send("&eWARNING &f- Location cache is disabled. Locations will be calculated on the spot, players may take a while to respawn depending on your other settings.");
+            Logger.send("&eWARNING &f- Location cache is disabled. Locations will be calculated on the spot, players may take a while to respawn depending on your other settings.");
             return;
         }
 
-        ConsoleLogger.send("&eCreating safe locations...");
+        Logger.send("&eCreating safe locations...");
 
         final Region allowed = settings.getAllowedRegion();
         final Region forbidden = settings.getForbiddenRegion();
@@ -213,21 +227,21 @@ public class RandomSpawnCache {
 
             @Override
             public void run(){
-                if(locationNumber[0] >= amountOfLocationsToAdd){
+                if(locationNumber[0] > amountOfLocationsToAdd){
                     showAddedLocations(addedLocations[0], addedLocations[1]);
                     cancel();
                     return;
                 }
 
-                ConsoleLogger.debug("&eAttempting to add location number "+ locationNumber[0]);
+                Logger.debug("&eAttempting to add location number "+ locationNumber[0]);
 
                 Location loc = allowed.generateNewLocation(forbidden);
 
                 if(loc == null){
-                    ConsoleLogger.debug("&cFailed to add location number "+ locationNumber[0] +" after "+settings.getFindSafeLocationAttempts()+" attempts");
+                    Logger.debug("&cFailed to add location number "+ locationNumber[0] +" after "+settings.getFindSafeLocationAttempts()+" attempts");
                     addedLocations[1]++;
                 }else {
-                    ConsoleLogger.debug("&aLocation number "+ locationNumber[0] +" successfully added!");
+                    Logger.debug("&aLocation number "+ locationNumber[0] +" successfully added!");
                     spawnLocations.add(loc);
                     addedLocations[0]++;
                 }
@@ -266,12 +280,12 @@ public class RandomSpawnCache {
      */
     private void showAddedLocations(int succeeded, int failed){
         if(succeeded > 0) {
-            ConsoleLogger.send("&aSuccessfully added " + succeeded + " new safe spawn locations");
+            Logger.send("&aSuccessfully added " + succeeded + " new safe spawn locations");
         }else{
-            ConsoleLogger.send("&fNo new locations were added.");
+            Logger.send("&fNo new locations were added.");
         }
         if(failed > 0){
-            ConsoleLogger.send("&cFailed to add "+ failed +" safe spawn locations");
+            Logger.send("&cFailed to add "+ failed +" safe spawn locations");
         }
     }
 
@@ -298,7 +312,7 @@ public class RandomSpawnCache {
 
             plugin.getCacheYaml().save();
 
-            ConsoleLogger.send("&aCache saved to cache file successfully!");
+            Logger.send("&aCache saved to cache file successfully!");
         }
     }
 
@@ -311,29 +325,29 @@ public class RandomSpawnCache {
 
         if(settings.isSaveCacheToFile()) {
             FileConfiguration cache = plugin.getCacheYaml().getAccess();
-            ConsoleLogger.debug("&fLoading locations from cache file...");
+            Logger.debug("&fLoading locations from cache file...");
 
             //If no cache section is found
             if(!cache.contains("cache")) {
-                ConsoleLogger.debug("&cNo locations were found. Creating new ones instead.");
+                Logger.debug("&cNo locations were found. Creating new ones instead.");
                 return;
             }
 
             List<Location> locations = (List<Location>) cache.getList("cache");
 
-            ConsoleLogger.debug("&aFound &f" + locations.size() + "&a locations to load.");
+            Logger.debug("&aFound &f" + locations.size() + "&a locations to load.");
 
             for (Location loc : locations) {
                 if(Region.isValidLocation(loc, settings.getForbiddenRegion(), settings.getAllowedRegion())) {
                     spawnLocations.add(loc);
-                    ConsoleLogger.debug("&aAdded a location from the cache file.");
+                    Logger.debug("&aAdded a location from the cache file.");
                 } else {
-                    ConsoleLogger.debug("&cA location in the cache file was not safe and therefore not added to the spawn list.");
+                    Logger.debug("&cA location in the cache file was not safe and therefore not added to the spawn list.");
                 }
             }
 
-            ConsoleLogger.debug("&fFinished loading locations from cache file.");
-            ConsoleLogger.debug("&f" + spawnLocations.size() + "/" + locations.size() + " safe locations were loaded from the cache file");
+            Logger.debug("&fFinished loading locations from cache file.");
+            Logger.debug("&f" + spawnLocations.size() + "/" + locations.size() + " safe locations were loaded from the cache file");
 
             cache.set("cache", null);
             plugin.getCacheYaml().save();

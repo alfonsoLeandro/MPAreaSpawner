@@ -39,6 +39,12 @@ public class Settings {
     private boolean checkSafetyOnUse;
     private boolean deleteOnUnsafe;
     private boolean replaceRemovedLocation;
+    private boolean spawnOnDeath;
+    private boolean spawnOnFirstJoin;
+    private boolean spawnOnBed;
+    private boolean useAutomaticPermission;
+    private boolean essentialsHomeOnRespawn;
+    private boolean essentialsSetHomeOnFirstJoin;
     private int cachedLocationsAmount;
     private int findSafeLocationAttempts;
     private int airGapAbove;
@@ -81,6 +87,12 @@ public class Settings {
         this.checkSafetyOnUse = config.getBoolean("re-check for safety on use");
         this.deleteOnUnsafe = config.getBoolean("delete location on unsafe");
         this.replaceRemovedLocation = config.getBoolean("replace location on remove");
+        this.spawnOnDeath = config.getBoolean("spawn on death");
+        this.spawnOnFirstJoin = config.getBoolean("spawn on first join");
+        this.spawnOnBed = config.getBoolean("spawn on bed");
+        this.useAutomaticPermission = config.getBoolean("use permission");
+        this.essentialsHomeOnRespawn = config.getBoolean("essentials home teleport");
+        this.essentialsSetHomeOnFirstJoin = config.getBoolean("essentials home on first spawn");
 
         this.findSafeLocationAttempts = config.getInt("safe spawn attempts");
         this.cachedLocationsAmount = config.getInt("amount of cached spawns");
@@ -110,9 +122,54 @@ public class Settings {
 
         boolean clampToLimits = config.getBoolean("spawn zone.clamp to limits");
 
-        int xCenter = clampToLimits ? Math.min(29_999_984, config.getInt("spawn zone.x center")) : config.getInt("spawn zone.x center");
-        int yCenter = clampToLimits ? Math.min(255, config.getInt("spawn zone.y center")) : config.getInt("spawn zone.y center");
-        int zCenter = clampToLimits ? Math.min(29_999_984, config.getInt("spawn zone.z center")) : config.getInt("spawn zone.z center");
+        int xCenter;
+        int yCenter;
+        int zCenter;
+
+        //Multiverse, essentials and vanilla spawnpoints.
+        if(config.getInt("spawn zone.x center") == -1) {
+            if(config.getBoolean("spawn zone.default to multiverse")){
+                //TODO: Multiverse integration.
+                xCenter = 0;
+            }else if(config.getBoolean("spawn zone.default to essentials")){
+                //TODO: Essentials integration.
+                xCenter = 0;
+            }else{
+                xCenter = world.getSpawnLocation().getBlockX();
+            }
+        }else{
+            xCenter = clampToLimits ? Math.min(29_999_984, config.getInt("spawn zone.x center")) : config.getInt("spawn zone.x center");
+        }
+
+        //Multiverse, essentials and vanilla spawnpoints.
+        if(config.getInt("spawn zone.y center") == -1) {
+            if(config.getBoolean("spawn zone.default to multiverse")){
+                //TODO: Multiverse integration.
+                yCenter = 0;
+            }else if(config.getBoolean("spawn zone.default to essentials")){
+                //TODO: Essentials integration.
+                yCenter = 0;
+            }else{
+                yCenter = world.getSpawnLocation().getBlockY();
+            }
+        }else{
+            yCenter = clampToLimits ? Math.min(255, config.getInt("spawn zone.y center")) : config.getInt("spawn zone.y center");
+        }
+
+        //Multiverse, essentials and vanilla spawnpoints.
+        if(config.getInt("spawn zone.z center") == -1) {
+            if(config.getBoolean("spawn zone.default to multiverse")){
+                //TODO: Multiverse integration.
+                zCenter = 0;
+            }else if(config.getBoolean("spawn zone.default to essentials")){
+                //TODO: Essentials integration.
+                zCenter = 0;
+            }else{
+                zCenter = world.getSpawnLocation().getBlockZ();
+            }
+        }else{
+            zCenter = clampToLimits ? Math.min(29_999_984, config.getInt("spawn zone.z center")) : config.getInt("spawn zone.z center");
+        }
 
         int xRange = clampToLimits ? Math.min(29_999_984, config.getInt("spawn zone.x range")) : config.getInt("spawn zone.x range");
         int yRange = clampToLimits ? Math.min(255, config.getInt("spawn zone.y range")) : config.getInt("spawn zone.y range");
@@ -124,8 +181,8 @@ public class Settings {
             if(zCenter+zRange > 29_999_984 || zCenter-zRange < -29_999_984) zRange = 29_999_984 - zCenter;
         }
 
-        ConsoleLogger.debug("Region final centers: "+xCenter+" "+yCenter+" "+zCenter);
-        ConsoleLogger.debug("Region final ranges: "+xRange+" "+yRange+" "+zRange);
+        Logger.debug("Region final centers: "+xCenter+" "+yCenter+" "+zCenter);
+        Logger.debug("Region final ranges: "+xRange+" "+yRange+" "+zRange);
 
         this.allowedRegion = Region.newRegionByRanges(xCenter, yCenter, zCenter,
                 xRange, yRange, zRange);
@@ -191,6 +248,30 @@ public class Settings {
 
     public boolean isReplaceRemovedLocation(){
         return replaceRemovedLocation;
+    }
+
+    public boolean isSpawnOnDeath(){
+        return spawnOnDeath;
+    }
+
+    public boolean isSpawnOnFirstJoin(){
+        return spawnOnFirstJoin;
+    }
+
+    public boolean isSpawnOnBed(){
+        return spawnOnBed;
+    }
+
+    public boolean isUseAutomaticPermission(){
+        return useAutomaticPermission;
+    }
+
+    public boolean isEssentialsHomeOnRespawn(){
+        return essentialsHomeOnRespawn;
+    }
+
+    public boolean isEssentialsSetHomeOnFirstJoin(){
+        return essentialsSetHomeOnFirstJoin;
     }
 
     public int getFindSafeLocationAttempts(){

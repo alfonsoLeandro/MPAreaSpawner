@@ -17,8 +17,8 @@ package com.popupmc.areaspawner.commands;
 
 import com.popupmc.areaspawner.AreaSpawner;
 import com.popupmc.areaspawner.spawn.RandomSpawnCache;
+import com.popupmc.areaspawner.utils.Logger;
 import com.popupmc.areaspawner.utils.Settings;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -67,140 +67,131 @@ public final class MainCommand implements CommandExecutor {
         locationsStored = messages.getString("messages.number of locations");
     }
 
-    /**
-     * Sends a message to the CommandSender.
-     * @param msg The message to be sent.
-     */
-    private void send(CommandSender sender, String msg){
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfigYaml().getAccess().getString("prefix")+" "+msg));
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            send(sender, commandList);
-            send(sender, "&f/"+label+" help");
-            send(sender,"&f/"+label+" version");
-            send(sender,"&f/"+label+" reload");
-            send(sender,"&f/"+label+" regenerate");
-            send(sender,"&f/"+label+" locations");
-            send(sender,"&f/"+label+" stopCache");
-            send(sender,"&f/"+label+" getSettings");
+            Logger.send(sender, commandList);
+            Logger.send(sender, "&f/"+label+" help");
+            Logger.send(sender,"&f/"+label+" version");
+            Logger.send(sender,"&f/"+label+" reload");
+            Logger.send(sender,"&f/"+label+" regenerate");
+            Logger.send(sender,"&f/"+label+" locations");
+            Logger.send(sender,"&f/"+label+" stopCache");
+            Logger.send(sender,"&f/"+label+" getSettings");
 
 
         }else if(args[0].equalsIgnoreCase("version")) {
             if(!sender.hasPermission("areaSpawner.version")) {
-                send(sender, noPerm);
+                Logger.send(sender, noPerm);
                 return true;
             }
 //            TODO: updateChecker
 //            if(!plugin.getVersion().equals(plugin.getLatestVersion())){
-//                send("&fVersion: &e"+plugin.getVersion()+"&f. &cUpdate available!");
-//                send("&fDownload here: http://bit.ly/2Pl4Rg7");
+//                Logger.send("&fVersion: &e"+plugin.getVersion()+"&f. &cUpdate available!");
+//                Logger.send("&fDownload here: http://bit.ly/2Pl4Rg7");
 //                return true;
 //            }
-            send(sender,"&fVersion: &e" + plugin.getVersion() + "&f. &aUp to date!");
+            Logger.send(sender,"&fVersion: &e" + plugin.getVersion() + "&f. &aUp to date!");
 
 
         //Reloading will only verify locations and remove any of them if necessary, it will not create new locations.
         }else if(args[0].equalsIgnoreCase("reload")) {
             if(!sender.hasPermission("areaSpawner.reload")) {
-                send(sender, noPerm);
+                Logger.send(sender, noPerm);
                 return true;
             }
             plugin.reloadFiles();
             loadMessages();
             Settings.getInstance().reloadFields();
             RandomSpawnCache.getInstance().reValidateSpawns();
-            send(sender, reloaded);
+            Logger.send(sender, reloaded);
             plugin.checkDangerousSettings();
 
 
 
         }else if(args[0].equalsIgnoreCase("regenerate")){
             if(!sender.hasPermission("areaSpawner.regenerate")) {
-                send(sender, noPerm);
+                Logger.send(sender, noPerm);
                 return true;
             }
-            send(sender, regenerating);
+            Logger.send(sender, regenerating);
             RandomSpawnCache.getInstance().createSafeSpawns(true);
 
 
 
         }else if(args[0].equalsIgnoreCase("locations")) {
             if(!sender.hasPermission("areaSpawner.locations")) {
-                send(sender, noPerm);
+                Logger.send(sender, noPerm);
                 return true;
             }
-            send(sender, locationsStored
+            Logger.send(sender, locationsStored
                     .replace("%locations%", String.valueOf(RandomSpawnCache.getInstance().getLocationsInCache())));
 
 
 
         }else if(args[0].equalsIgnoreCase("stopCache")) {
             if(!sender.hasPermission("areaSpawner.stopCache")) {
-                send(sender, noPerm);
+                Logger.send(sender, noPerm);
                 return true;
             }
             RandomSpawnCache rsp = RandomSpawnCache.getInstance();
             int locations = rsp.getLocationsInCache();
 
             if(rsp.stopCache()){
-                send(sender, "&aThe cache process has been successfully stopped.");
-                send(sender, "&eThere are currently "+locations+" locations saved in cache.");
+                Logger.send(sender, "&aThe cache process has been successfully stopped.");
+                Logger.send(sender, "&eThere are currently "+locations+" locations saved in cache.");
             }else{
-                send(sender, "&cThe cache process was not running.");
+                Logger.send(sender, "&cThe cache process was not running.");
             }
 
         }else if(args[0].equalsIgnoreCase("getSettings")) {
             if(!sender.hasPermission("areaSpawner.getSettings")) {
-                send(sender, noPerm);
+                Logger.send(sender, noPerm);
                 return true;
             }
             Settings settings = Settings.getInstance();
 
-            send(sender, "&cBooleans");
-            send(sender, "&fDebug: "+settings.isDebug());
-            send(sender, "&fReplace used locations: "+settings.isRemoveUsedLocation());
-            send(sender, "&fCache enabled: "+settings.isCacheEnabled());
-            send(sender, "&fCheck past surface: "+!settings.isNotCheckPastSurface());
-            send(sender, "&fCheck safety on use: "+settings.isCheckSafetyOnUse());
-            send(sender, "&fDelete on unsafe: "+settings.isDeleteOnUnsafe());
-            send(sender, "&cIntegers");
-            send(sender, "&fAttempts to find a safe location: "+settings.getFindSafeLocationAttempts());
-            send(sender, "&fAmount of locations to try and save to cache: "+settings.getCachedLocationsAmount());
-            send(sender, "&fTicks to wait between generating locations: "+settings.getTimeBetweenLocations());
-            send(sender, "&cStrings");
-            send(sender, "&fWorld name: "+settings.getWorldName());
-            send(sender, "&cRegions");
-            send(sender, "&fSpawn zone:");
-            send(sender, "X:"+settings.getAllowedRegion().getMinX()+","+settings.getAllowedRegion().getMaxX());
-            send(sender, "Y:"+settings.getAllowedRegion().getMinY()+","+settings.getAllowedRegion().getMaxY());
-            send(sender, "Z:"+settings.getAllowedRegion().getMinZ()+","+settings.getAllowedRegion().getMaxZ());
-            send(sender, "&fNo spawn zone:");
-            send(sender, "X:"+settings.getForbiddenRegion().getMinX()+","+settings.getForbiddenRegion().getMaxX());
-            send(sender, "Y:"+settings.getForbiddenRegion().getMinY()+","+settings.getForbiddenRegion().getMaxY());
-            send(sender, "Z:"+settings.getForbiddenRegion().getMinZ()+","+settings.getForbiddenRegion().getMaxZ());
+            Logger.send(sender, "&cBooleans");
+            Logger.send(sender, "&fDebug: "+settings.isDebug());
+            Logger.send(sender, "&fReplace used locations: "+settings.isRemoveUsedLocation());
+            Logger.send(sender, "&fCache enabled: "+settings.isCacheEnabled());
+            Logger.send(sender, "&fCheck past surface: "+!settings.isNotCheckPastSurface());
+            Logger.send(sender, "&fCheck safety on use: "+settings.isCheckSafetyOnUse());
+            Logger.send(sender, "&fDelete on unsafe: "+settings.isDeleteOnUnsafe());
+            Logger.send(sender, "&cIntegers");
+            Logger.send(sender, "&fAttempts to find a safe location: "+settings.getFindSafeLocationAttempts());
+            Logger.send(sender, "&fAmount of locations to try and save to cache: "+settings.getCachedLocationsAmount());
+            Logger.send(sender, "&fTicks to wait between generating locations: "+settings.getTimeBetweenLocations());
+            Logger.send(sender, "&cStrings");
+            Logger.send(sender, "&fWorld name: "+settings.getWorldName());
+            Logger.send(sender, "&cRegions");
+            Logger.send(sender, "&fSpawn zone:");
+            Logger.send(sender, "X:"+settings.getAllowedRegion().getMinX()+","+settings.getAllowedRegion().getMaxX());
+            Logger.send(sender, "Y:"+settings.getAllowedRegion().getMinY()+","+settings.getAllowedRegion().getMaxY());
+            Logger.send(sender, "Z:"+settings.getAllowedRegion().getMinZ()+","+settings.getAllowedRegion().getMaxZ());
+            Logger.send(sender, "&fNo spawn zone:");
+            Logger.send(sender, "X:"+settings.getForbiddenRegion().getMinX()+","+settings.getForbiddenRegion().getMaxX());
+            Logger.send(sender, "Y:"+settings.getForbiddenRegion().getMinY()+","+settings.getForbiddenRegion().getMaxY());
+            Logger.send(sender, "Z:"+settings.getForbiddenRegion().getMinZ()+","+settings.getForbiddenRegion().getMaxZ());
 
 
         //TEMP - Used for testing
         }else if(args[0].equalsIgnoreCase("teleport")) {
             if(sender instanceof ConsoleCommandSender){
-                send(sender, "&cYou cannot send that command from console.");
+                Logger.send(sender, "&cYou cannot send that command from console.");
                 return true;
             }
             if(!sender.hasPermission("areaSpawner.teleport")) {
-                send(sender, noPerm);
+                Logger.send(sender, noPerm);
                 return true;
             }
             RandomSpawnCache rsp = RandomSpawnCache.getInstance();
-            ((Player)sender).teleport(rsp.getSafeSpawn());
-            send(sender, "&aTeleported!");
+            rsp.teleport((Player)sender);
 
 
             //unknown command
         }else {
-            send(sender, unknown.replace("%command%", label));
+            Logger.send(sender, unknown.replace("%command%", label));
         }
 
 
