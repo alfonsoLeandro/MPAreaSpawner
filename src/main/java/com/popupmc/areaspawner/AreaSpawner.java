@@ -16,6 +16,8 @@ limitations under the License.
 package com.popupmc.areaspawner;
 
 import com.popupmc.areaspawner.commands.MainCommand;
+import com.popupmc.areaspawner.events.FirstJoinEvent;
+import com.popupmc.areaspawner.events.PlayerDieEvent;
 import com.popupmc.areaspawner.spawn.RandomSpawnCache;
 import com.popupmc.areaspawner.utils.Settings;
 import com.popupmc.areaspawner.utils.YamlFile;
@@ -140,7 +142,8 @@ public final class AreaSpawner extends JavaPlugin {
      */
     private void registerEvents() {
         PluginManager pm = getServer().getPluginManager();
-        //pm.registerEvents(new Event(this), this);
+        pm.registerEvents(new FirstJoinEvent(), this);
+        pm.registerEvents(new PlayerDieEvent(this), this);
     }
 
 
