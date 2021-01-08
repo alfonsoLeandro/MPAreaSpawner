@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class FirstJoinEvent implements Listener {
@@ -37,7 +38,8 @@ public class FirstJoinEvent implements Listener {
                 Logger.debug("&e"+player.getName()+" has joined for the first time and has been teleported to a new random location.");
 
                 if(settings.isEssentialsSetHomeOnFirstJoin()){
-                    ((Essentials)Bukkit.getPluginManager().getPlugin("Essentials")).getUser(player).setHome("home", location);
+                    ((Essentials)Bukkit.getPluginManager().getPlugin("Essentials")).getUser(player).setHome(settings.getFirstJoinHomeName(), location);
+                    Logger.send(player, plugin.getMessagesYaml().getAccess().getString("messages.home set"));
                     Logger.debug("&eEssentials home set for "+player.getName()+".");
                 }
             }

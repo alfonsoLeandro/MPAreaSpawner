@@ -335,7 +335,7 @@ public class RandomSpawnCache {
             }
 
             List<Location> locations = (List<Location>) cache.getList("cache");
-
+            assert locations != null;
             Logger.debug("&aFound &f" + locations.size() + "&a locations to load.");
 
             for (Location loc : locations) {

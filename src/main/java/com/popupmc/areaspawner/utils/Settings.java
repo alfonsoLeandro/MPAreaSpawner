@@ -51,6 +51,7 @@ public class Settings {
     private int timeBetweenLocations;
     private String prefix;
     private String worldName;
+    private String firstJoinHomeName;
     private List<String> blockBlackList;
     private List<String> blockWhiteList;
     private World world;
@@ -107,6 +108,7 @@ public class Settings {
 
         this.prefix = config.getString("prefix");
         this.worldName = config.getString("spawn world");
+        this.firstJoinHomeName = config.getString("home on first spawn name", "home");
 
         this.blockBlackList = config.getStringList("block blacklist");
         this.blockWhiteList = config.getStringList("block whitelist");
@@ -286,6 +288,10 @@ public class Settings {
 
     public String getWorldName(){
         return worldName;
+    }
+
+    public String getFirstJoinHomeName(){
+        return firstJoinHomeName;
     }
 
     public List<String> getBlockBlackList(){

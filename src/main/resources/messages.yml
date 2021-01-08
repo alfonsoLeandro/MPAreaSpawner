@@ -6,3 +6,6 @@ messages:
   regenerating: '&fRegenerating every spawn location for every world in config...'
   number of locations: '&fThere are currently &c%locations% &flocations stored in cache.'
   you have been teleported: '&aYou have been teleported to a new random location.'
+  home set: '&fAn essentials home to this location has been set for you'
+  teleported to home: '&aYou have been teleported to your home'
+  teleported to bed: '&aYou have been teleported to your bed'

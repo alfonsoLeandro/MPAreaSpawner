@@ -52,6 +52,7 @@ public class PlayerDieEvent implements Listener {
                     try {
                         Location home = user.getHome(user.getHomes().get(0));
                         player.teleport(home, PlayerTeleportEvent.TeleportCause.PLUGIN);
+                        Logger.send(player, plugin.getMessagesYaml().getAccess().getString("messages.teleported to home"));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -63,6 +64,8 @@ public class PlayerDieEvent implements Listener {
                         Logger.send(event.getPlayer(), plugin.getMessagesYaml().getAccess().getString("messages.you have been teleported"));
                     }
                 }
+            }else{
+                Logger.send(event.getPlayer(), plugin.getMessagesYaml().getAccess().getString("messages.teleported to bed"));
             }
         }
     }

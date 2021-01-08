@@ -225,3 +225,6 @@ travel cost: 0 #TODO
 
 # Will set an Essentials home on the traveled location if none set for the player before.
 home on travel: false #TODO
+
+# The name for the home automatically set for the player on travel if "home on travel" is set to true.
+home on travel name: 'home' #TODO
