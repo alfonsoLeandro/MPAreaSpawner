@@ -21,6 +21,7 @@ import com.popupmc.areaspawner.utils.Logger;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -102,8 +103,8 @@ public class RandomSpawnCache {
      * @param player The player to teleport.
      */
     public void teleport(Player player){
-        player.teleport(getSafeSpawn());
-        Logger.send(player, plugin.getMessagesYaml().getAccess().getString("you have been teleported"));
+        player.teleport(getSafeSpawn(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+        Logger.send(player, plugin.getMessagesYaml().getAccess().getString("messages.you have been teleported"));
     }
 
 
@@ -312,7 +313,7 @@ public class RandomSpawnCache {
 
             plugin.getCacheYaml().save();
 
-            Logger.send("&aCache saved to cache file successfully!");
+            Logger.send("&aSuccessfully saved locations to cache file!");
         }
     }
 
@@ -347,7 +348,7 @@ public class RandomSpawnCache {
             }
 
             Logger.debug("&fFinished loading locations from cache file.");
-            Logger.debug("&f" + spawnLocations.size() + "/" + locations.size() + " safe locations were loaded from the cache file");
+            Logger.send("&f" + spawnLocations.size() + "/" + locations.size() + " safe locations were loaded from the cache file");
 
             cache.set("cache", null);
             plugin.getCacheYaml().save();

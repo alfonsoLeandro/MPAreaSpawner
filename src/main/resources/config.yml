@@ -21,7 +21,7 @@ config version: 1
 prefix: '&f[&eMPAreaSpawner&f]'
 
 # Whether to show debug messages in console or not. Example of debug message: "generating safe spawn locations for world1"
-debug: true
+debug: false
 
 #####################
 #  Spawn settings   #
@@ -42,7 +42,6 @@ spawn world: world
 spawn zone:
   clamp to limits: true
   default to multiverse: false
-  default to essentials: false
 
   x center: 0
   y center: 128
@@ -143,6 +142,10 @@ essentials home teleport: true
 # Should AreaSpawner set the user's Essentials home 'home' on first-join
 # random spawn?
 essentials home on first spawn: true
+
+# The name to give to the new home when players first join the server and get randomly teleported
+# with "essentials home on first spawn" set to true.
+home on first spawn name: 'home'
 
 ###############
 #   Caching   #
