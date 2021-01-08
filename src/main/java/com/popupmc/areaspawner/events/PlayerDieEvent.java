@@ -15,13 +15,19 @@ limitations under the License.
  */
 package com.popupmc.areaspawner.events;
 
+import com.earth2me.essentials.Essentials;
+import com.earth2me.essentials.User;
 import com.popupmc.areaspawner.AreaSpawner;
 import com.popupmc.areaspawner.spawn.RandomSpawnCache;
 import com.popupmc.areaspawner.utils.Logger;
 import com.popupmc.areaspawner.utils.Settings;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class PlayerDieEvent implements Listener {
 
@@ -34,15 +40,27 @@ public class PlayerDieEvent implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerRespawnEvent event){
         Settings settings = Settings.getInstance();
+        Player player = event.getPlayer();
 
         if(settings.isSpawnOnDeath()){
             if(!(event.isBedSpawn() && settings.isSpawnOnBed())){
-                if(settings.isEssentialsHomeOnRespawn() /*&& player tiene essentials home*/){
-                    //TODO: Essentials home respawn
+                if(settings.isEssentialsHomeOnRespawn()
+                        && !((Essentials) Bukkit.getPluginManager().getPlugin("Essentials")).getUser(player).getHomes().isEmpty()){
+
+                    User user = ((Essentials) Bukkit.getPluginManager().getPlugin("Essentials")).getUser(player);
+
+                    try {
+                        Location home = user.getHome(user.getHomes().get(0));
+                        player.teleport(home, PlayerTeleportEvent.TeleportCause.PLUGIN);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
                 }else{
-                    if(!settings.isUseAutomaticPermission() || event.getPlayer().hasPermission("areaSpawner.automatic")) {
+                    if(settings.isNotUseAutomaticPermission() || event.getPlayer().hasPermission("areaSpawner.automatic")) {
                         event.setRespawnLocation(RandomSpawnCache.getInstance().getSafeSpawn());
-                        Logger.send(event.getPlayer(), plugin.getMessagesYaml().getAccess().getString("you have been teleported"));
+                        Logger.send(event.getPlayer(), plugin.getMessagesYaml().getAccess().getString("messages.you have been teleported"));
                     }
                 }
             }

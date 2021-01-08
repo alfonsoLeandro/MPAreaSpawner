@@ -5,6 +5,7 @@ api-version: 1.15
 authors: [lelesape]
 description: ${project.description}
 website: http://bit.ly/2mwvHWN
+softdepend: [Essentials, MultiverseCore]
 
 commands:
   areaSpawner:

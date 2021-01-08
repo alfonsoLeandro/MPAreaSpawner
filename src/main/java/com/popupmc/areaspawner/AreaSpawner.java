@@ -142,7 +142,7 @@ public final class AreaSpawner extends JavaPlugin {
      */
     private void registerEvents() {
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new FirstJoinEvent(), this);
+        pm.registerEvents(new FirstJoinEvent(this), this);
         pm.registerEvents(new PlayerDieEvent(this), this);
     }
 

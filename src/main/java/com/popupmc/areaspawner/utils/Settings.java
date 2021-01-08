@@ -91,8 +91,9 @@ public class Settings {
         this.spawnOnFirstJoin = config.getBoolean("spawn on first join");
         this.spawnOnBed = config.getBoolean("spawn on bed");
         this.useAutomaticPermission = config.getBoolean("use permission");
-        this.essentialsHomeOnRespawn = config.getBoolean("essentials home teleport");
-        this.essentialsSetHomeOnFirstJoin = config.getBoolean("essentials home on first spawn");
+        boolean essentialsEnabled = Bukkit.getPluginManager().getPlugin("Essentials") != null && Bukkit.getPluginManager().isPluginEnabled("Essentials");
+        this.essentialsHomeOnRespawn = config.getBoolean("essentials home teleport") && essentialsEnabled;
+        this.essentialsSetHomeOnFirstJoin = config.getBoolean("essentials home on first spawn") && essentialsEnabled;
 
         this.findSafeLocationAttempts = config.getInt("safe spawn attempts");
         this.cachedLocationsAmount = config.getInt("amount of cached spawns");
@@ -117,7 +118,6 @@ public class Settings {
     }
 
     private void defineAllowedRegion(){
-        //TODO: essentials & multiverse options.
         FileConfiguration config = plugin.getConfig();
 
         boolean clampToLimits = config.getBoolean("spawn zone.clamp to limits");
@@ -131,9 +131,6 @@ public class Settings {
             if(config.getBoolean("spawn zone.default to multiverse")){
                 //TODO: Multiverse integration.
                 xCenter = 0;
-            }else if(config.getBoolean("spawn zone.default to essentials")){
-                //TODO: Essentials integration.
-                xCenter = 0;
             }else{
                 xCenter = world.getSpawnLocation().getBlockX();
             }
@@ -146,9 +143,6 @@ public class Settings {
             if(config.getBoolean("spawn zone.default to multiverse")){
                 //TODO: Multiverse integration.
                 yCenter = 0;
-            }else if(config.getBoolean("spawn zone.default to essentials")){
-                //TODO: Essentials integration.
-                yCenter = 0;
             }else{
                 yCenter = world.getSpawnLocation().getBlockY();
             }
@@ -160,9 +154,6 @@ public class Settings {
         if(config.getInt("spawn zone.z center") == -1) {
             if(config.getBoolean("spawn zone.default to multiverse")){
                 //TODO: Multiverse integration.
-                zCenter = 0;
-            }else if(config.getBoolean("spawn zone.default to essentials")){
-                //TODO: Essentials integration.
                 zCenter = 0;
             }else{
                 zCenter = world.getSpawnLocation().getBlockZ();
@@ -190,7 +181,6 @@ public class Settings {
 
 
     private void defineForbiddenRegion() {
-        //TODO: essentials & multiverse options.
         FileConfiguration config = plugin.getConfig();
 
         boolean enabled = config.getBoolean("no spawn zone.enabled");
@@ -262,8 +252,8 @@ public class Settings {
         return spawnOnBed;
     }
 
-    public boolean isUseAutomaticPermission(){
-        return useAutomaticPermission;
+    public boolean isNotUseAutomaticPermission(){
+        return !useAutomaticPermission;
     }
 
     public boolean isEssentialsHomeOnRespawn(){
