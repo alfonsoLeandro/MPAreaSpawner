@@ -80,4 +80,13 @@ public enum TimeUnit {
                 return TimeUnit.SECONDS;
         }
     }
+
+
+    public static int getTicks(int amount, TimeUnit timeUnit){
+        return amount * timeUnit.getMultiplier();
+    }
+
+    public static int getTicks(int amount, char timeUnit){
+        return getTicks(amount, TimeUnit.getByAlias(timeUnit));
+    }
 }
