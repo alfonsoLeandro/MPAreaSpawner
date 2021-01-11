@@ -25,6 +25,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -172,7 +174,6 @@ public class RandomSpawnCache {
      * If the range of coordinates has changed and the no-spawn region is greater than the spawn region, said
      */
     public void reValidateSpawns(){
-        //Fixme: Async?
         Settings settings = Settings.getInstance();
         for(Location loc : spawnLocations){
             if(!Region.isValidLocation(loc, settings.getForbiddenRegion(), settings.getAllowedRegion())){
@@ -303,13 +304,13 @@ public class RandomSpawnCache {
      * Saves the locations in cache to the cache file.
      */
     public void saveToFile(){
-        //TODO: md5 hash?
         Settings settings = Settings.getInstance();
 
         if(settings.isSaveCacheToFile()) {
             FileConfiguration cache = plugin.getCacheYaml().getAccess();
 
             cache.set("cache", this.spawnLocations);
+            cache.set("cache-settings-hash", getMDHash(this.spawnLocations));
 
             plugin.getCacheYaml().save();
 
@@ -321,12 +322,11 @@ public class RandomSpawnCache {
      * Loads every location in the cache file.
      */
     public void loadFromFile(){
-        //TODO: md5 hash?
         Settings settings = Settings.getInstance();
 
         if(settings.isSaveCacheToFile()) {
             FileConfiguration cache = plugin.getCacheYaml().getAccess();
-            Logger.debug("&fLoading locations from cache file...");
+            Logger.debug("&eTrying to load locations from cache file...");
 
             //If no cache section is found
             if(!cache.contains("cache")) {
@@ -335,7 +335,19 @@ public class RandomSpawnCache {
             }
 
             List<Location> locations = (List<Location>) cache.getList("cache");
+            assert locations != null;
 
+
+            if(cache.contains("cache-settings-hash")){
+                String hash = getMDHash(locations);
+                if(hash != null && !cache.getString("cache-settings-hash").equals(hash)){
+                    Logger.send("&cThe cache file has been modified. Invalidating cache.");
+                    Logger.send("&eCreating new locations...");
+                    return;
+                }
+            }
+
+            Logger.debug("&aCache file is valid.");
             Logger.debug("&aFound &f" + locations.size() + "&a locations to load.");
 
             for (Location loc : locations) {
@@ -352,6 +364,33 @@ public class RandomSpawnCache {
 
             cache.set("cache", null);
             plugin.getCacheYaml().save();
+        }
+    }
+
+    /**
+     * Gets a string that corresponds to the MD5 hash of the given list of locations.
+     * @param locations The list of locations.
+     * @return The MD5 hash string value that represents the given list of locations.
+     */
+    private String getMDHash(List<Location> locations){
+        StringBuilder result = new StringBuilder();
+        for (Location loc : locations){
+            result.append(loc.toString());
+        }
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(result.toString().getBytes());
+            byte[] bytes = md.digest();
+            StringBuilder toString = new StringBuilder();
+            for(byte b : bytes){
+                toString.append(Integer.toHexString(b & 0xff));
+            }
+            return toString.toString();
+
+        }catch (NoSuchAlgorithmException e){
+            Logger.debug("&cFailed to hash cache file using md5 hash.");
+            return null;
         }
     }
 

@@ -69,15 +69,24 @@ public enum TimeUnit {
         switch (alias){
             case 'm':
             case 'M':
-                return TimeUnit.MINUTES;
+                return MINUTES;
             case 'h':
             case 'H':
-                return TimeUnit.HOURS;
+                return HOURS;
             case 'd':
             case 'D':
-                return TimeUnit.DAYS;
+                return DAYS;
             default:
-                return TimeUnit.SECONDS;
+                return SECONDS;
         }
+    }
+
+
+    public static int getTicks(int amount, TimeUnit timeUnit){
+        return amount * timeUnit.getMultiplier();
+    }
+
+    public static int getTicks(int amount, char timeUnit){
+        return getTicks(amount, TimeUnit.getByAlias(timeUnit));
     }
 }

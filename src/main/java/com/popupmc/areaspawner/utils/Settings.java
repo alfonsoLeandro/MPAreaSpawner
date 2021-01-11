@@ -100,9 +100,9 @@ public class Settings {
         this.airGapAbove = config.getInt("air gap above");
         String timeString = config.getString("time between generating locations");
         if(timeString != null && timeString.length() > 1) {
-            this.timeBetweenLocations = Time.getTicks(Integer.parseInt(timeString.substring(0, timeString.length() - 1)), TimeUnit.getByAlias(timeString.charAt(timeString.length() - 1)));
+            this.timeBetweenLocations = TimeUnit.getTicks(Integer.parseInt(timeString.substring(0, timeString.length() - 1)), timeString.charAt(timeString.length() - 1));
         }else{
-            this.timeBetweenLocations = Time.getTicks(3, TimeUnit.SECONDS);
+            this.timeBetweenLocations = TimeUnit.getTicks(3, TimeUnit.SECONDS);
         }
 
         this.prefix = config.getString("prefix");
