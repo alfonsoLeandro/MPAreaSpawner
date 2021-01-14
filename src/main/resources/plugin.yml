@@ -5,7 +5,7 @@ api-version: 1.15
 authors: [lelesape]
 description: ${project.description}
 website: http://bit.ly/2mwvHWN
-softdepend: [Essentials, MultiverseCore]
+softdepend: [Essentials, MultiverseCore, Vault]
 
 commands:
   areaSpawner:
@@ -36,6 +36,9 @@ permissions:
   areaSpawner.travel:
     description: Allows you to teleport manually using the travel command.
     default: op
+  areaSpawner.forceTravel:
+    description: Allows you to force a player to teleport to a new random location.
+    default: op
   areaSpawner.cooldown.bypass:
     description: Allows a player to bypass travel command cooldowns when these are enabled.
     default: op
@@ -48,5 +51,6 @@ permissions:
       areaSpawner.locations: true
       areaSpawner.regenerate: true
       areaSpawner.automatic: true
+      areaSpawner.forceTravel: true
       areaSpawner.travel: true
       areaSpawner.cooldown.bypass: true

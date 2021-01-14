@@ -204,27 +204,23 @@ re-check for safety on use: true
 
 # Should the "/travel" command be enabled for players to use?
 # Requires "areaSpawner.travel" permission.
-# Changes to this field will need a plugin restart.
-travel enabled: true #TODO
+travel enabled: true
 
 # How much time between "/travel" uses? Set to 0 disable.
 # S -> Seconds; M -> Minutes; H -> Hours; D -> Days.
 # Any incorrect input will be detected as 0s (disabled)
 # Permission to bypass cooldowns is "areaSpawner.cooldown.bypass"
-travel cooldown: 10S #TODO
+travel cooldown: 10S
 
 # Will remove "areaSpawner.travel" permission from players that run the "/travel" command successfully.
 # Requires Vault.
-remove permission on travel: false #TODO
+remove permission on travel: false
 
 # How much will a player be charged in order to run the "/travel" command successfully?
 # Set to 0 to disable. Requires Vault and an economy plugin to be installed on the server.
 # You can also opt-to instead use my MPCommandSettings plugin to have command charges and cooldowns
 # all in one place. spigotmc.org/resources/mp-command-settings.72098
-travel cost: 0 #TODO
+travel cost: 0.0
 
 # Will set an Essentials home on the traveled location if none set for the player before.
-home on travel: false #TODO
-
-# The name for the home automatically set for the player on travel if "home on travel" is set to true.
-home on travel name: 'home' #TODO
+home on travel: false

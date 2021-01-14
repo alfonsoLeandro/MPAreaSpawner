@@ -47,10 +47,14 @@ public class Settings {
     private boolean useAutomaticPermission;
     private boolean essentialsHomeOnRespawn;
     private boolean essentialsSetHomeOnFirstJoin;
+    private boolean essentialsSetHomeOnTravel;
+    private boolean travelEnabled;
+    private boolean removePermissionOnTravel;
     private int cachedLocationsAmount;
     private int findSafeLocationAttempts;
     private int airGapAbove;
     private int timeBetweenLocations;
+    private int travelCooldown;
     private String prefix;
     private String worldName;
     private String firstJoinHomeName;
@@ -97,15 +101,24 @@ public class Settings {
         boolean essentialsEnabled = Bukkit.getPluginManager().getPlugin("Essentials") != null && Bukkit.getPluginManager().isPluginEnabled("Essentials");
         this.essentialsHomeOnRespawn = config.getBoolean("essentials home teleport") && essentialsEnabled;
         this.essentialsSetHomeOnFirstJoin = config.getBoolean("essentials home on first spawn") && essentialsEnabled;
+        this.essentialsSetHomeOnTravel = config.getBoolean("home on travel") && essentialsEnabled;
+        this.travelEnabled = config.getBoolean("travel enabled");
+        this.removePermissionOnTravel = config.getBoolean("remove permission on travel");
 
         this.findSafeLocationAttempts = config.getInt("safe spawn attempts");
         this.cachedLocationsAmount = config.getInt("amount of cached spawns");
         this.airGapAbove = config.getInt("air gap above");
         String timeString = config.getString("time between generating locations");
         if(timeString != null && timeString.length() > 1) {
-            this.timeBetweenLocations = Time.getTicks(Integer.parseInt(timeString.substring(0, timeString.length() - 1)), TimeUnit.getByAlias(timeString.charAt(timeString.length() - 1)));
+            this.timeBetweenLocations = TimeUnit.getTicks(Integer.parseInt(timeString.substring(0, timeString.length() - 1)), timeString.charAt(timeString.length() - 1));
         }else{
-            this.timeBetweenLocations = Time.getTicks(3, TimeUnit.SECONDS);
+            this.timeBetweenLocations = TimeUnit.getTicks(3, TimeUnit.SECONDS);
+        }
+        String cooldownString = config.getString("travel cooldown");
+        if(cooldownString != null && cooldownString.length() > 1) {
+            this.travelCooldown = TimeUnit.getTicks(Integer.parseInt(cooldownString.substring(0, cooldownString.length() - 1)), cooldownString.charAt(cooldownString.length() - 1));
+        }else{
+            this.travelCooldown = TimeUnit.getTicks(0, TimeUnit.SECONDS);
         }
 
         this.prefix = config.getString("prefix");
@@ -266,6 +279,18 @@ public class Settings {
         return essentialsSetHomeOnFirstJoin;
     }
 
+    public boolean isEssentialsSetHomeOnTravel(){
+        return essentialsSetHomeOnTravel;
+    }
+
+    public boolean isTravelEnabled(){
+        return travelEnabled;
+    }
+
+    public boolean isRemovePermissionOnTravel(){
+        return removePermissionOnTravel;
+    }
+
     public int getFindSafeLocationAttempts(){
         return findSafeLocationAttempts;
     }
@@ -280,6 +305,10 @@ public class Settings {
 
     public int getTimeBetweenLocations(){
         return timeBetweenLocations;
+    }
+
+    public int getTravelCooldown(){
+        return travelCooldown;
     }
 
     public String getPrefix(){

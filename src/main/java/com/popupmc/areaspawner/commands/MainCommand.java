@@ -18,14 +18,10 @@ package com.popupmc.areaspawner.commands;
 import com.popupmc.areaspawner.AreaSpawner;
 import com.popupmc.areaspawner.spawn.RandomSpawnCache;
 import com.popupmc.areaspawner.utils.Logger;
-import com.popupmc.areaspawner.utils.Settings;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -69,7 +65,7 @@ public final class MainCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
             Logger.send(sender, commandList);
             Logger.send(sender, "&f/"+label+" help");
@@ -78,7 +74,6 @@ public final class MainCommand implements CommandExecutor {
             Logger.send(sender,"&f/"+label+" regenerate");
             Logger.send(sender,"&f/"+label+" locations");
             Logger.send(sender,"&f/"+label+" stopCache");
-            Logger.send(sender,"&f/"+label+" getSettings");
 
 
         }else if(args[0].equalsIgnoreCase("version")) {
@@ -101,12 +96,9 @@ public final class MainCommand implements CommandExecutor {
                 Logger.send(sender, noPerm);
                 return true;
             }
-            plugin.reloadFiles();
+            plugin.reload();
             loadMessages();
-            Settings.getInstance().reloadFields();
-            RandomSpawnCache.getInstance().reValidateSpawns();
             Logger.send(sender, reloaded);
-            plugin.checkDangerousSettings();
 
 
 
@@ -144,51 +136,6 @@ public final class MainCommand implements CommandExecutor {
             }else{
                 Logger.send(sender, "&cThe cache process was not running.");
             }
-
-        }else if(args[0].equalsIgnoreCase("getSettings")) {
-            if(!sender.hasPermission("areaSpawner.getSettings")) {
-                Logger.send(sender, noPerm);
-                return true;
-            }
-            Settings settings = Settings.getInstance();
-
-            Logger.send(sender, "&cBooleans");
-            Logger.send(sender, "&fDebug: "+settings.isDebug());
-            Logger.send(sender, "&fReplace used locations: "+settings.isRemoveUsedLocation());
-            Logger.send(sender, "&fCache enabled: "+settings.isCacheEnabled());
-            Logger.send(sender, "&fCheck past surface: "+!settings.isNotCheckPastSurface());
-            Logger.send(sender, "&fCheck safety on use: "+settings.isCheckSafetyOnUse());
-            Logger.send(sender, "&fDelete on unsafe: "+settings.isDeleteOnUnsafe());
-            Logger.send(sender, "&cIntegers");
-            Logger.send(sender, "&fAttempts to find a safe location: "+settings.getFindSafeLocationAttempts());
-            Logger.send(sender, "&fAmount of locations to try and save to cache: "+settings.getCachedLocationsAmount());
-            Logger.send(sender, "&fTicks to wait between generating locations: "+settings.getTimeBetweenLocations());
-            Logger.send(sender, "&cStrings");
-            Logger.send(sender, "&fWorld name: "+settings.getWorldName());
-            Logger.send(sender, "&cRegions");
-            Logger.send(sender, "&fSpawn zone:");
-            Logger.send(sender, "X:"+settings.getAllowedRegion().getMinX()+","+settings.getAllowedRegion().getMaxX());
-            Logger.send(sender, "Y:"+settings.getAllowedRegion().getMinY()+","+settings.getAllowedRegion().getMaxY());
-            Logger.send(sender, "Z:"+settings.getAllowedRegion().getMinZ()+","+settings.getAllowedRegion().getMaxZ());
-            Logger.send(sender, "&fNo spawn zone:");
-            Logger.send(sender, "X:"+settings.getForbiddenRegion().getMinX()+","+settings.getForbiddenRegion().getMaxX());
-            Logger.send(sender, "Y:"+settings.getForbiddenRegion().getMinY()+","+settings.getForbiddenRegion().getMaxY());
-            Logger.send(sender, "Z:"+settings.getForbiddenRegion().getMinZ()+","+settings.getForbiddenRegion().getMaxZ());
-
-
-        //TEMP - Used for testing
-        }else if(args[0].equalsIgnoreCase("teleport")) {
-            if(sender instanceof ConsoleCommandSender){
-                Logger.send(sender, "&cYou cannot send that command from console.");
-                return true;
-            }
-            if(!sender.hasPermission("areaSpawner.teleport")) {
-                Logger.send(sender, noPerm);
-                return true;
-            }
-            RandomSpawnCache rsp = RandomSpawnCache.getInstance();
-            rsp.teleport((Player)sender);
-
 
             //unknown command
         }else {

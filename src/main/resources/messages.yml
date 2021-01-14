@@ -1,3 +1,14 @@
+#############################
+#        AreaSpawner        #
+#        by lelesape        #
+# sponsored by DarkPrincess #
+#############################
+# If you find this plugin useful remember to review it on spigot. ANY suggestions will
+# be heard, make sure to leave them either on the spigot plugin page, the github page for
+# this project or lelesape(MasterPlugins)'s plugin support discord server: https://bit.ly/MPDiscordSv
+#
+# Messages file. Here you will find every translatable messages.
+###############################################
 messages:
   list of commands: '&6List of commands:'
   no permission: '&cNo permission'
@@ -6,6 +17,20 @@ messages:
   regenerating: '&fRegenerating every spawn location for every world in config...'
   number of locations: '&fThere are currently &c%locations% &flocations stored in cache.'
   you have been teleported: '&aYou have been teleported to a new random location.'
-  home set: '&fAn essentials home to this location has been set for you'
-  teleported to home: '&aYou have been teleported to your home'
-  teleported to bed: '&aYou have been teleported to your bed'
+  travel disabled: '&cThat feature is disabled.'
+  still in cooldown: '&cYou are still on cooldown for using this feature. Time left: %time%'
+  not enough money: '&cYou don''t have enough money, you need %amount%'
+  charged: '&eCharged: &c%price%'
+  travel permission removed: '&cYour ability to teleport to a random spot has been removed.'
+  essentials home set: '&fAn essentials home has been set for you in your location.'
+  invalid player: '&cThat player is not online or does not exist.'
+  player has been teleported: '&a%player% successfully teleported to a new random location.'
+  and: 'and'
+  day: 'day'
+  days: 'days'
+  hour: 'hour'
+  hours: 'hours'
+  minute: 'minute'
+  minutes: 'minutes'
+  second: 'second'
+  seconds: 'seconds'
