@@ -61,6 +61,9 @@ public class RandomSpawnCache {
             replaceLocation();
         }
     };
+    /**
+     * The cache task used for cancelling said task.
+     */
     private BukkitTask cacheGeneratorTask;
 
 

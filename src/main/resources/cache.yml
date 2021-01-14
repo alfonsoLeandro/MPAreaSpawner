@@ -1,12 +1,22 @@
+#############################
+#        AreaSpawner        #
+#        by lelesape        #
+# sponsored by DarkPrincess #
+#############################
+# If you find this plugin useful remember to review it on spigot. ANY suggestions will
+# be heard, make sure to leave them either on the spigot plugin page, the github page for
+# this project or lelesape(MasterPlugins)'s plugin support discord server: https://bit.ly/MPDiscordSv
+#
+# This is the cache file, said file is used for saving safe spawn locations
+# when the server shuts down or the plugin gets disabled. When the plugin is re-enabled
+# the locations saved in here will be validated and loaded or discarded if no longer considered safe.
+# This file should not be modified manually.
+###############################################
+
 # Don't touch this! Internal use only.
 cache-settings-hash: 1234567890ABCDEF
 
-# List of saved locations.
 #cache:
-
-#cache:
-#   world:
-#     - LOCATION OBJECT
-#     - LOCATION OBJECT.
-#   anotherWorld:
-#     - LOCATION OBJECT
+#   - LOCATION OBJECT
+#   - LOCATION OBJECT.
+#   - LOCATION OBJECT

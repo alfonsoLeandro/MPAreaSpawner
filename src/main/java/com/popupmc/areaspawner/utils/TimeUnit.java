@@ -15,6 +15,13 @@ limitations under the License.
  */
 package com.popupmc.areaspawner.utils;
 
+import com.popupmc.areaspawner.AreaSpawner;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Class for representing a conventional time unit.
  */
@@ -88,5 +95,80 @@ public enum TimeUnit {
 
     public static int getTicks(int amount, char timeUnit){
         return getTicks(amount, TimeUnit.getByAlias(timeUnit));
+    }
+
+    /**
+     * Translates and amount of ticks into days, hours, minutes and seconds.
+     * @param ticks The amount of ticks to translate
+     * @return A string with an d,h,m and s format.
+     */
+    public static String getTimeString(long ticks){
+        FileConfiguration messages = JavaPlugin.getPlugin(AreaSpawner.class).getMessagesYaml().getAccess();
+        List<String> args = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+
+        long days = getDays(ticks);
+        long hours = getHours(ticks);
+        long minutes = getMinutes(ticks);
+        long seconds = getSeconds(ticks);
+
+
+        if(days > 0){
+            String s = days + " " +
+                    (days > 1 ? messages.getString("messages.days") : messages.getString("messages.day"));
+
+            args.add(s);
+        }
+
+        if(hours > 0){
+            String s = hours + " " +
+                    (hours > 1 ? messages.getString("messages.hours") : messages.getString("messages.hour"));
+
+            args.add(s);
+        }
+
+        if(minutes > 0){
+            String s = minutes + " " +
+                    (minutes > 1 ? messages.getString("messages.minutes") : messages.getString("messages.minute"));
+            args.add(s);
+        }
+
+        String s = (seconds >= 0 ? seconds : 0) + " " +
+                (seconds == 0 || seconds > 1 ? messages.getString("messages.seconds") : messages.getString("messages.second"));
+        args.add(s);
+
+
+        for (int i = 0; i < args.size(); i++) {
+
+            if(args.size() > 1 && i != 0) {
+                sb.append(i == args.size()-1 ? " "+messages.getString("messages.and")+" " : ", ");
+            }
+
+            sb.append(args.get(i));
+        }
+
+        return sb.toString();
+    }
+
+
+    public static long getTotalSeconds(long ticks){
+        return ticks/20;
+    }
+
+
+    public static long getSeconds(long ticks){
+        return java.util.concurrent.TimeUnit.SECONDS.toSeconds(getTotalSeconds(ticks)) - java.util.concurrent.TimeUnit.MINUTES.toSeconds(getMinutes(ticks)) - java.util.concurrent.TimeUnit.HOURS.toSeconds(getHours(ticks)) - java.util.concurrent.TimeUnit.DAYS.toSeconds(getDays(ticks));
+    }
+
+    public static long getMinutes(long ticks){
+        return java.util.concurrent.TimeUnit.SECONDS.toMinutes(getTotalSeconds(ticks)) - java.util.concurrent.TimeUnit.HOURS.toMinutes(getHours(ticks)) - java.util.concurrent.TimeUnit.DAYS.toMinutes(getDays(ticks));
+    }
+
+    public static long getHours(long ticks){
+        return java.util.concurrent.TimeUnit.SECONDS.toHours(getTotalSeconds(ticks)) - java.util.concurrent.TimeUnit.DAYS.toHours(getDays(ticks));
+    }
+
+    public static long getDays(long ticks){
+        return java.util.concurrent.TimeUnit.SECONDS.toDays(getTotalSeconds(ticks));
     }
 }
