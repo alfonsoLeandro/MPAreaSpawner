@@ -16,7 +16,9 @@ limitations under the License.
 package com.popupmc.areaspawner;
 
 import com.popupmc.areaspawner.commands.MainCommand;
+import com.popupmc.areaspawner.commands.MainCommandTabAutoCompleter;
 import com.popupmc.areaspawner.commands.TravelCommand;
+import com.popupmc.areaspawner.commands.TravelCommandTabAutoCompleter;
 import com.popupmc.areaspawner.events.FirstJoinEvent;
 import com.popupmc.areaspawner.events.PlayerDieEvent;
 import com.popupmc.areaspawner.spawn.RandomSpawnCache;
@@ -220,8 +222,10 @@ public final class AreaSpawner extends JavaPlugin {
         }
 
         mainCommand.setExecutor(new MainCommand(this));
+        mainCommand.setTabCompleter(new MainCommandTabAutoCompleter());
         this.travelCommand = new TravelCommand(this);
         travelCommand.setExecutor(this.travelCommand);
+        travelCommand.setTabCompleter(new TravelCommandTabAutoCompleter());
     }
 
     /**
