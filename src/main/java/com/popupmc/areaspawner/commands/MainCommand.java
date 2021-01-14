@@ -51,7 +51,7 @@ public final class MainCommand implements CommandExecutor {
     }
 
     /**
-     * Loads every message used here from the messages file.
+     * Loads/reloads every message used here from the messages file.
      */
     private void loadMessages(){
         FileConfiguration messages = plugin.getMessagesYaml().getAccess();
@@ -68,6 +68,7 @@ public final class MainCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
             Logger.send(sender, commandList);
+            Logger.send(sender, "&f/randomSpawn");
             Logger.send(sender, "&f/"+label+" help");
             Logger.send(sender,"&f/"+label+" version");
             Logger.send(sender,"&f/"+label+" reload");
