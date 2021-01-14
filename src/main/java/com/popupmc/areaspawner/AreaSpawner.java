@@ -16,17 +16,24 @@ limitations under the License.
 package com.popupmc.areaspawner;
 
 import com.popupmc.areaspawner.commands.MainCommand;
+import com.popupmc.areaspawner.commands.TravelCommand;
 import com.popupmc.areaspawner.events.FirstJoinEvent;
 import com.popupmc.areaspawner.events.PlayerDieEvent;
 import com.popupmc.areaspawner.spawn.RandomSpawnCache;
+import com.popupmc.areaspawner.utils.Logger;
 import com.popupmc.areaspawner.utils.Settings;
+import com.popupmc.areaspawner.utils.TravelCooldownManager;
 import com.popupmc.areaspawner.utils.YamlFile;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -38,9 +45,12 @@ public final class AreaSpawner extends JavaPlugin {
 
     final private PluginDescriptionFile pdfFile = getDescription();
     final private String version = pdfFile.getVersion();
-//    private String latestVersion; TODO
+    //    private String latestVersion; TODO
     final private char color = 'e';
     final private String name = "&f[&" + color + pdfFile.getName() + "&f]";
+    private TravelCommand travelCommand;
+    private Economy econ;
+    private Permission perms;
     private YamlFile configYaml;
     private YamlFile messagesYaml;
     private YamlFile cacheYaml;
@@ -48,6 +58,7 @@ public final class AreaSpawner extends JavaPlugin {
 
     /**
      * Sends a message to the console, with colors and prefix added.
+     *
      * @param msg The message to be sent.
      */
     private void send(String msg) {
@@ -68,6 +79,19 @@ public final class AreaSpawner extends JavaPlugin {
         Settings.createInstance(this);
         checkDangerousSettings();
         RandomSpawnCache.createInstance(this);
+        TravelCooldownManager.createInstance(this);
+        if(setupEconomy()) {
+            Logger.send("&aEconomy hooked successfully.");
+        } else {
+            Logger.send("&cVault or a vault supported economy plugin has not been found.");
+            Logger.send("&cEconomy features disabled.");
+        }
+        if(setupPermissions()) {
+            Logger.send("&aPermissions hooked successfully.");
+        } else {
+            Logger.send("&cVault or a vault supported permissions plugin has not been found.");
+            Logger.send("&cPermissions features disabled.");
+        }
         registerEvents();
         registerCommands();
         //updateChecker();
@@ -83,6 +107,32 @@ public final class AreaSpawner extends JavaPlugin {
         send("&fThank you for using my plugin! &" + color + pdfFile.getName() + "&f By " + pdfFile.getAuthors().get(0));
         send("&fJoin my discord server at &chttps://discordapp.com/invite/ZznhQud");
         send("Please consider subscribing to my yt channel: &c" + pdfFile.getWebsite());
+    }
+
+    public boolean setupEconomy() {
+        Plugin vault = getServer().getPluginManager().getPlugin("Vault");
+        if(vault == null || !vault.isEnabled()) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if(rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
+    }
+
+    public boolean setupPermissions() {
+        Plugin vault = getServer().getPluginManager().getPlugin("Vault");
+        if(vault == null || !vault.isEnabled()) {
+            return false;
+        }
+        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+        if(rsp == null) {
+            return false;
+        }
+        perms = rsp.getProvider();
+        return perms != null;
     }
 
 //TODO: Update checker
@@ -136,6 +186,14 @@ public final class AreaSpawner extends JavaPlugin {
         cooldownYaml = new YamlFile(this, "travel cooldown.yml");
     }
 
+    public void reload(){
+        reloadFiles();
+        Settings.getInstance().reloadFields();
+        RandomSpawnCache.getInstance().reValidateSpawns();
+        checkDangerousSettings();
+        this.travelCommand.loadMessages();
+    }
+
 
     /**
      * Registers the event listeners.
@@ -152,17 +210,24 @@ public final class AreaSpawner extends JavaPlugin {
      */
     private void registerCommands() {
         PluginCommand mainCommand = getCommand("areaSpawner");
+        PluginCommand travelCommand = getCommand("randomSpawn");
 
-        if(mainCommand == null){
-            send("&cERROR while registering plugin commands. Please check your plugin.yml file is intact.");
+        if(mainCommand == null || travelCommand == null){
+            send("&cERROR while registering plugin commands. Please check your plugin.yml file is correct.");
             send("&cDisabling the plugin.");
             setEnabled(false);
             return;
         }
 
         mainCommand.setExecutor(new MainCommand(this));
+        this.travelCommand = new TravelCommand(this);
+        travelCommand.setExecutor(this.travelCommand);
     }
 
+    /**
+     * Checks for dangerous settings, settings that could affect player experience in a bad way or that
+     * can result in slowing the server down or not letting this plugins work properly.
+     */
     public void checkDangerousSettings(){
         Settings fields = Settings.getInstance();
 
@@ -183,15 +248,31 @@ public final class AreaSpawner extends JavaPlugin {
         if(!getConfig().getBoolean("spawn zone.clamp to limits")){
             send("&eWARNING &f- Clamp to limits is set to false in config, players may be able to spawn off limits in some cases.");
         }
-        if(getConfig().getInt("air gap above") < 2){
+        if(fields.getAirGapAbove() < 2){
             send("&eWARNING &f- Air gap above is set to a value lower than 2 (player height), players may suffocate in walls.");
         }
-        if(!getConfig().getBoolean("enable cache")){
+        if(!fields.isCacheEnabled()){
             send("&eWARNING &f- Location cache is disabled. Locations will be calculated on the spot, players may take a while to respawn depending on your other settings.");
         }
-        if(!getConfig().getBoolean("re check for safety on use")){
+        if(!fields.isCheckSafetyOnUse()){
             send("&eWARNING &f- Locations' safety is not checked once again on use. Players might be teleported to unsafe locations that were considered safe.");
         }
+    }
+
+    /**
+     * Gets the economy object.
+     * @return The economy object.
+     */
+    public Economy getEconomy() {
+        return this.econ;
+    }
+
+    /**
+     * Gets the permission object.
+     * @return The permission object.
+     */
+    public Permission getPerms() {
+        return this.perms;
     }
 
     /**
