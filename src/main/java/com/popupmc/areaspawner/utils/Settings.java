@@ -15,11 +15,13 @@ limitations under the License.
  */
 package com.popupmc.areaspawner.utils;
 
+import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.popupmc.areaspawner.AreaSpawner;
 import com.popupmc.areaspawner.spawn.Region;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
@@ -55,6 +57,7 @@ public class Settings {
     private int travelCooldown;
     private String prefix;
     private String worldName;
+    private String firstJoinHomeName;
     private List<String> blockBlackList;
     private List<String> blockWhiteList;
     private World world;
@@ -120,6 +123,7 @@ public class Settings {
 
         this.prefix = config.getString("prefix");
         this.worldName = config.getString("spawn world");
+        this.firstJoinHomeName = config.getString("home on first spawn name", "home");
 
         this.blockBlackList = config.getStringList("block blacklist");
         this.blockWhiteList = config.getStringList("block whitelist");
@@ -132,6 +136,7 @@ public class Settings {
 
     private void defineAllowedRegion(){
         FileConfiguration config = plugin.getConfig();
+        boolean multiverseEnabled = Bukkit.getPluginManager().getPlugin("Multiverse-Core") != null && Bukkit.getPluginManager().isPluginEnabled("Multiverse-Core");
 
         boolean clampToLimits = config.getBoolean("spawn zone.clamp to limits");
 
@@ -141,9 +146,8 @@ public class Settings {
 
         //Multiverse, essentials and vanilla spawnpoints.
         if(config.getInt("spawn zone.x center") == -1) {
-            if(config.getBoolean("spawn zone.default to multiverse")){
-                //TODO: Multiverse integration.
-                xCenter = 0;
+            if(config.getBoolean("spawn zone.default to multiverse") && multiverseEnabled){
+                xCenter = JavaPlugin.getPlugin(MultiverseCore.class).getMVWorldManager().getMVWorld(world).getSpawnLocation().getBlockX();
             }else{
                 xCenter = world.getSpawnLocation().getBlockX();
             }
@@ -153,9 +157,8 @@ public class Settings {
 
         //Multiverse, essentials and vanilla spawnpoints.
         if(config.getInt("spawn zone.y center") == -1) {
-            if(config.getBoolean("spawn zone.default to multiverse")){
-                //TODO: Multiverse integration.
-                yCenter = 0;
+            if(config.getBoolean("spawn zone.default to multiverse") && multiverseEnabled){
+                yCenter = JavaPlugin.getPlugin(MultiverseCore.class).getMVWorldManager().getMVWorld(world).getSpawnLocation().getBlockY();
             }else{
                 yCenter = world.getSpawnLocation().getBlockY();
             }
@@ -165,9 +168,8 @@ public class Settings {
 
         //Multiverse, essentials and vanilla spawnpoints.
         if(config.getInt("spawn zone.z center") == -1) {
-            if(config.getBoolean("spawn zone.default to multiverse")){
-                //TODO: Multiverse integration.
-                zCenter = 0;
+            if(config.getBoolean("spawn zone.default to multiverse") && multiverseEnabled){
+                zCenter = JavaPlugin.getPlugin(MultiverseCore.class).getMVWorldManager().getMVWorld(world).getSpawnLocation().getBlockZ();
             }else{
                 zCenter = world.getSpawnLocation().getBlockZ();
             }
@@ -315,6 +317,10 @@ public class Settings {
 
     public String getWorldName(){
         return worldName;
+    }
+
+    public String getFirstJoinHomeName(){
+        return firstJoinHomeName;
     }
 
     public List<String> getBlockBlackList(){
