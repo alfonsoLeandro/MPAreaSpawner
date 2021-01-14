@@ -37,7 +37,7 @@ public class FirstJoinEvent implements Listener {
                 Logger.debug("&e"+player.getName()+" has joined for the first time and has been teleported to a new random location.");
 
                 if(settings.isEssentialsSetHomeOnFirstJoin()){
-                    JavaPlugin.getPlugin(Essentials.class).getUser(player).setHome("home", location);
+                    JavaPlugin.getPlugin(Essentials.class).getUser(player).setHome(settings.getFirstJoinHomeName(), location);
                     Logger.debug("&eEssentials home set for "+player.getName()+".");
                     Logger.send(player, plugin.getMessagesYaml().getAccess().getString("messages.essentials home set"));
                 }

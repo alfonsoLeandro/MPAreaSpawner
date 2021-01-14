@@ -58,6 +58,7 @@ public class Settings {
     private String prefix;
     private String worldName;
     private String firstJoinHomeName;
+    private String travelHomeName;
     private List<String> blockBlackList;
     private List<String> blockWhiteList;
     private World world;
@@ -123,7 +124,8 @@ public class Settings {
 
         this.prefix = config.getString("prefix");
         this.worldName = config.getString("spawn world");
-        this.firstJoinHomeName = config.getString("home on first spawn name", "home");
+        this.firstJoinHomeName = config.getString("home on first spawn name");
+        this.travelHomeName = config.getString("home on travel name");
 
         this.blockBlackList = config.getStringList("block blacklist");
         this.blockWhiteList = config.getStringList("block whitelist");
@@ -320,6 +322,10 @@ public class Settings {
     }
 
     public String getFirstJoinHomeName(){
+        return firstJoinHomeName;
+    }
+
+    public String getTravelHomeName(){
         return firstJoinHomeName;
     }
 

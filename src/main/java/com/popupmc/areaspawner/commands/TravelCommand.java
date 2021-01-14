@@ -138,7 +138,7 @@ public class TravelCommand implements CommandExecutor {
             if(settings.isEssentialsSetHomeOnTravel()) {
                 User user = JavaPlugin.getPlugin(Essentials.class).getUser(player);
                 if(user.getHomes().isEmpty()) {
-                    user.setHome("home", location);
+                    user.setHome(settings.getTravelHomeName(), location);
                     Logger.debug("&eEssentials home set for " + player.getName() + ".");
                     Logger.send(sender, essentialsHomeSet);
                 } else {

@@ -224,3 +224,6 @@ travel cost: 0.0
 
 # Will set an Essentials home on the traveled location if none set for the player before.
 home on travel: false
+
+# Will set an Essentials home on the traveled location if none set for the player before.
+home on travel name: 'home'
