@@ -12,11 +12,5 @@
 # the locations saved in here will be validated and loaded or discarded if no longer considered safe.
 # This file should not be modified manually.
 ###############################################
-
 # Don't touch this! Internal use only.
 cache-settings-hash: 1234567890ABCDEF
-
-#cache:
-#   - LOCATION OBJECT
-#   - LOCATION OBJECT.
-#   - LOCATION OBJECT

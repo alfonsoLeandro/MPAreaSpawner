@@ -224,7 +224,7 @@ public class RandomSpawnCache {
         final Region allowed = settings.getAllowedRegion();
         final Region forbidden = settings.getForbiddenRegion();
         final int amountOfLocationsToAdd = settings.getCachedLocationsAmount();
-        final int[] locationNumber = {spawnLocations.size() + 1};
+        final int[] locationNumber = {spawnLocations.size()};
         final int[] addedLocations = {0, 0};
 
 
@@ -232,6 +232,7 @@ public class RandomSpawnCache {
 
             @Override
             public void run(){
+                locationNumber[0]++;
                 if(locationNumber[0] > amountOfLocationsToAdd){
                     showAddedLocations(addedLocations[0], addedLocations[1]);
                     cancel();
@@ -250,7 +251,6 @@ public class RandomSpawnCache {
                     spawnLocations.add(loc);
                     addedLocations[0]++;
                 }
-                locationNumber[0]++;
 
             }
 
