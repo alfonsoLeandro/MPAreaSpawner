@@ -13,8 +13,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * Listener class for listening to {@link PlayerJoinEvent} to look for players that join for the first time.
+ *
+ * @author lelesape
+ */
 public class FirstJoinEvent implements Listener {
 
+    /**
+     * AreaSpawner's main class instance.
+     */
     final private AreaSpawner plugin;
 
     public FirstJoinEvent(AreaSpawner plugin){

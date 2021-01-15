@@ -59,14 +59,11 @@ no spawn zone:
   x range: 8_000_000
   z range: 8_000_000
 
-# List of blocks that players are safe to spawn on.
-block whitelist:
-  - 'GRASS_BLOCK'
-  - 'DIRT'
 
-# List of block that should be recognized as non-safe.
-# Player will not spawn on this blocks.
-block blacklist:
+# List of block that will be used when checking for block safety.
+# if "list is whitelist" set to false (default), this list is a blacklist -> Players will not spawn on this blocks.
+# if "list is whitelist" set to true, this list is a whitelist -> Players will spawn on this blocks.
+block list:
   - 'BEDROCK'
   - 'PLANKS'
   - 'SAPLING'
@@ -91,9 +88,12 @@ block blacklist:
   - 'PORTAL'
   - 'ENCHANTING TABLE'
 
+# Should the list above contain blocks that should be considered safe?
+list is whitelist: false
 
 # Are block that aren't found in the whitelist safe?
-non-whitelist are safe: true
+# If "list is whitelist" is set to true, are blocks not found in the list considered safe?
+non-list are safe: true
 
 # The amount of air block needed for a location to be seen as safe.
 # Default: 2 (recommended).

@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * Tab completer for AreaSpawner's travel command {@link TravelCommand}.
+ *
+ * @author lelesape
  */
 public class TravelCommandTabAutoCompleter implements TabCompleter {
 

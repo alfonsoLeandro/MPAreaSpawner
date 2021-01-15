@@ -29,8 +29,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+/**
+ * Listener class for listening to {@link PlayerRespawnEvent} to look for players that have recently died and respawned.
+ *
+ * @author lelesape
+ */
 public class PlayerDieEvent implements Listener {
 
+    /**
+     * AreaSpawner's main class instance.
+     */
     final private AreaSpawner plugin;
 
     public PlayerDieEvent(AreaSpawner plugin){

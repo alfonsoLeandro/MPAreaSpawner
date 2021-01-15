@@ -20,9 +20,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-
+/**
+ * AreaSpawner's travel command, contains user and admins commands related to teleporting to a new random location.
+ *
+ * @author lelesape
+ */
 public class TravelCommand implements CommandExecutor {
 
+    /**
+     * AreaSpawner's main class instance.
+     */
     final private AreaSpawner plugin;
     //Translatable messages
     private String commandList;
@@ -41,7 +48,7 @@ public class TravelCommand implements CommandExecutor {
 
     /**
      * TravelCommand class constructor.
-     * @param plugin The main class instance.
+     * @param plugin AreaSpawner's main class instance.
      */
     public TravelCommand(AreaSpawner plugin){
         this.plugin = plugin;

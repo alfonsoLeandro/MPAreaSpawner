@@ -24,6 +24,8 @@ import java.util.List;
 
 /**
  * Class for representing a conventional time unit.
+ *
+ * @author lelesape
  */
 public enum TimeUnit {
 
@@ -89,10 +91,22 @@ public enum TimeUnit {
     }
 
 
+    /**
+     * Gets the amount of ticks a given amount of time of the given unit represents.
+     * @param amount The amount of time of the given time unit.
+     * @param timeUnit The timeunit for the given amount.
+     * @return The value in ticks of the given time amount.
+     */
     public static int getTicks(int amount, TimeUnit timeUnit){
         return amount * timeUnit.getMultiplier();
     }
 
+    /**
+     * Gets the amount of ticks a given amount of time of the given unit represents.
+     * @param amount The amount of time of the given time unit.
+     * @param timeUnit The char representing the timeunit for the given amount.
+     * @return The value in ticks of the given time amount.
+     */
     public static int getTicks(int amount, char timeUnit){
         return getTicks(amount, TimeUnit.getByAlias(timeUnit));
     }
@@ -150,24 +164,47 @@ public enum TimeUnit {
         return sb.toString();
     }
 
-
+    /**
+     * Gets the total amount of seconds a given amount of ticks represents.
+     * @param ticks The ticks to translate to seconds.
+     * @return The amount of seconds the given amount of ticks represent.
+     */
     public static long getTotalSeconds(long ticks){
         return ticks/20;
     }
 
-
+    /**
+     * Gets only the amount of seconds (between 0 and 60) an amount of ticks represent.
+     * @param ticks The amount of ticks.
+     * @return A number between 0 and 60 representing the seconds for the given amount of ticks.
+     */
     public static long getSeconds(long ticks){
         return java.util.concurrent.TimeUnit.SECONDS.toSeconds(getTotalSeconds(ticks)) - java.util.concurrent.TimeUnit.MINUTES.toSeconds(getMinutes(ticks)) - java.util.concurrent.TimeUnit.HOURS.toSeconds(getHours(ticks)) - java.util.concurrent.TimeUnit.DAYS.toSeconds(getDays(ticks));
     }
 
+    /**
+     * Gets only the amount of minutes (between 0 and 60) an amount of ticks represent.
+     * @param ticks The amount of ticks.
+     * @return A number between 0 and 60 representing the minutes for the given amount of ticks.
+     */
     public static long getMinutes(long ticks){
         return java.util.concurrent.TimeUnit.SECONDS.toMinutes(getTotalSeconds(ticks)) - java.util.concurrent.TimeUnit.HOURS.toMinutes(getHours(ticks)) - java.util.concurrent.TimeUnit.DAYS.toMinutes(getDays(ticks));
     }
 
+    /**
+     * Gets only the amount of hours (between 0 and 60) an amount of ticks represent.
+     * @param ticks The amount of ticks.
+     * @return A number between 0 and 60 representing the hours for the given amount of ticks.
+     */
     public static long getHours(long ticks){
         return java.util.concurrent.TimeUnit.SECONDS.toHours(getTotalSeconds(ticks)) - java.util.concurrent.TimeUnit.DAYS.toHours(getDays(ticks));
     }
 
+    /**
+     * Gets only the amount of days (between 0 and 24) an amount of ticks represent.
+     * @param ticks The amount of ticks.
+     * @return A number between 0 and 24 representing the days for the given amount of ticks.
+     */
     public static long getDays(long ticks){
         return java.util.concurrent.TimeUnit.SECONDS.toDays(getTotalSeconds(ticks));
     }

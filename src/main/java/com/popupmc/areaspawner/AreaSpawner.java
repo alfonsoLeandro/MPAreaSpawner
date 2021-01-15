@@ -320,6 +320,4 @@ public final class AreaSpawner extends JavaPlugin {
         return this.cooldownYaml;
     }
 
-
-
 }

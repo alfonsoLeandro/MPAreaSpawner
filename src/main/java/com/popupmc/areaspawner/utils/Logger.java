@@ -21,6 +21,8 @@ import org.bukkit.command.CommandSender;
 
 /**
  * Utility class with the only purpose of communicating with the server console and or players.
+ *
+ * @author lelesape
  */
 public class Logger {
 

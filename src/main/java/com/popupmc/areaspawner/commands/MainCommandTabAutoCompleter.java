@@ -10,6 +10,8 @@ import java.util.List;
 
 /**
  * Tab completer for AreaSpawner's main command {@link MainCommand}.
+ *
+ * @author lelesape
  */
 public class MainCommandTabAutoCompleter implements TabCompleter {
 

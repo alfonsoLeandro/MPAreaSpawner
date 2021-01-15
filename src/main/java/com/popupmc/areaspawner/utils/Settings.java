@@ -25,12 +25,24 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
+/**
+ * Class containing AreaSpawner's sensible settings, loaded from the config.yml file.
+ *
+ * @author lelesape
+ */
 public class Settings {
 
+    /**
+     * The only instance for this class.
+     */
     static private Settings instance;
 
+    /**
+     * AreaSpawner's main class instance.
+     */
     final private AreaSpawner plugin;
 
+    //Settings
     private boolean debug;
     private boolean removeUsedLocation;
     private boolean cacheEnabled;
@@ -50,6 +62,7 @@ public class Settings {
     private boolean essentialsSetHomeOnTravel;
     private boolean travelEnabled;
     private boolean removePermissionOnTravel;
+    private boolean listIsWhitelist;
     private int cachedLocationsAmount;
     private int findSafeLocationAttempts;
     private int airGapAbove;
@@ -59,29 +72,24 @@ public class Settings {
     private String worldName;
     private String firstJoinHomeName;
     private String travelHomeName;
-    private List<String> blockBlackList;
-    private List<String> blockWhiteList;
+    private List<String> blockList;
     private World world;
     private Region allowedRegion;
     private Region forbiddenRegion;
 
-
+    /**
+     * Creates a new Settings instance, private for helping on applying Singleton pattern.
+     * @param plugin AreaSpawner's main class instance.
+     */
     private Settings(AreaSpawner plugin){
         instance = this;
         this.plugin = plugin;
         reloadFields();
     }
 
-    public static void createInstance(AreaSpawner plugin){
-        instance = new Settings(plugin);
-    }
-
-    public static Settings getInstance(){
-        return instance;
-    }
-
-
-
+    /**
+     * Loads/reloads every field contained in this class.
+     */
     public void reloadFields(){
         FileConfiguration config = plugin.getConfig();
 
@@ -90,7 +98,7 @@ public class Settings {
         this.cacheEnabled = config.getBoolean("enable cache");
         this.saveCacheToFile = config.getBoolean("save cache to file");
         this.topToBottom = config.getBoolean("top to bottom");
-        this.nonWhiteListSafe = config.getBoolean("non-whitelist are safe");
+        this.nonWhiteListSafe = config.getBoolean("non-list are safe");
         this.checkPastSurface = config.getBoolean("check past surface");
         this.checkSafetyOnUse = config.getBoolean("re-check for safety on use");
         this.deleteOnUnsafe = config.getBoolean("delete location on unsafe");
@@ -105,6 +113,7 @@ public class Settings {
         this.essentialsSetHomeOnTravel = config.getBoolean("home on travel") && essentialsEnabled;
         this.travelEnabled = config.getBoolean("travel enabled");
         this.removePermissionOnTravel = config.getBoolean("remove permission on travel");
+        this.listIsWhitelist = config.getBoolean("list is whitelist");
 
         this.findSafeLocationAttempts = config.getInt("safe spawn attempts");
         this.cachedLocationsAmount = config.getInt("amount of cached spawns");
@@ -127,8 +136,7 @@ public class Settings {
         this.firstJoinHomeName = config.getString("home on first spawn name");
         this.travelHomeName = config.getString("home on travel name");
 
-        this.blockBlackList = config.getStringList("block blacklist");
-        this.blockWhiteList = config.getStringList("block whitelist");
+        this.blockList = config.getStringList("block list");
 
         this.world = Bukkit.getWorld(worldName);
 
@@ -136,6 +144,9 @@ public class Settings {
         defineForbiddenRegion();
     }
 
+    /**
+     * Defines the {@link #allowedRegion} field with the criteria given in the config file.
+     */
     private void defineAllowedRegion(){
         FileConfiguration config = plugin.getConfig();
         boolean multiverseEnabled = Bukkit.getPluginManager().getPlugin("Multiverse-Core") != null && Bukkit.getPluginManager().isPluginEnabled("Multiverse-Core");
@@ -196,7 +207,9 @@ public class Settings {
                 xRange, yRange, zRange);
     }
 
-
+    /**
+     * Defines the {@link #forbiddenRegion} field with the criteria given in the config file.
+     */
     private void defineForbiddenRegion() {
         FileConfiguration config = plugin.getConfig();
 
@@ -215,7 +228,7 @@ public class Settings {
 
 
 
-    //FIELDS
+    //Fields getters
 
     public boolean isDebug(){
         return debug;
@@ -293,6 +306,10 @@ public class Settings {
         return removePermissionOnTravel;
     }
 
+    public boolean isListIsWhitelist(){
+        return listIsWhitelist;
+    }
+
     public int getFindSafeLocationAttempts(){
         return findSafeLocationAttempts;
     }
@@ -326,15 +343,11 @@ public class Settings {
     }
 
     public String getTravelHomeName(){
-        return firstJoinHomeName;
+        return travelHomeName;
     }
 
-    public List<String> getBlockBlackList(){
-        return blockBlackList;
-    }
-
-    public List<String> getBlockWhiteList(){
-        return blockWhiteList;
+    public List<String> getBlockList(){
+        return blockList;
     }
 
     public World getWorld(){
@@ -347,6 +360,23 @@ public class Settings {
 
     public Region getForbiddenRegion(){
         return forbiddenRegion;
+    }
+
+
+    /**
+     * Creates an instance of TravelCooldownManager if none found.
+     * @param plugin AreaSpawner's main class instance.
+     */
+    public static void createInstance(AreaSpawner plugin){
+        instance = new Settings(plugin);
+    }
+
+    /**
+     * Gets the single instance of this class. {@link #createInstance(AreaSpawner)} should be run first.
+     * @return An instance of this Settings and the only one in existence.
+     */
+    public static Settings getInstance(){
+        return instance;
     }
 
 

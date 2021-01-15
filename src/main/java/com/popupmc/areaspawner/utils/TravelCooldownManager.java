@@ -5,13 +5,27 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Class for managing players that are on cooldown and checking if a player is on cooldown.
+ *
+ * @author lelesape
+ */
 public class TravelCooldownManager {
 
+    /**
+     * The only instance for this class.
+     */
     private static TravelCooldownManager instance;
 
+    /**
+     * AreaSpawner's main class instance.
+     */
     final private AreaSpawner plugin;
 
-
+    /**
+     * Creates an instance of this manager.
+     * @param plugin AreaSpawner's main class instance.
+     */
     private TravelCooldownManager(AreaSpawner plugin){
         this.plugin = plugin;
     }
@@ -43,11 +57,18 @@ public class TravelCooldownManager {
         plugin.getCooldownYaml().save();
     }
 
-
+    /**
+     * Creates an instance of TravelCooldownManager if none found.
+     * @param plugin AreaSpawner's main class instance.
+     */
     public static void createInstance(AreaSpawner plugin){
         if(instance == null) instance = new TravelCooldownManager(plugin);
     }
 
+    /**
+     * Gets the single instance of this class. {@link #createInstance(AreaSpawner)} should be run first.
+     * @return An instance of this TravelCooldownManager and the only one in existence.
+     */
     public static TravelCooldownManager getInstance(){
         return instance;
     }

@@ -20,7 +20,6 @@ import com.popupmc.areaspawner.utils.Settings;
 import com.popupmc.areaspawner.utils.Logger;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
 import java.util.Random;
@@ -191,7 +190,7 @@ public class Region {
                 loc.setY(i);
                 if(loc.getBlock().getType().equals(Material.VOID_AIR)) continue;
                 if(!loc.getBlock().getType().equals(Material.AIR)) {
-                    if(isSafeBlock(loc.getBlock())) {
+                    if(isSafeBlock(loc.getBlock().getType().toString())) {
                         return;
                     }else {
                         if(settings.isNotCheckPastSurface()) break;
@@ -207,7 +206,7 @@ public class Region {
                 if(loc.getBlock().getType().equals(Material.VOID_AIR)) continue;
                 //If the block is not air and the block above is air
                 if(!loc.getBlock().getType().equals(Material.AIR) && loc.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR)) {
-                    if(isSafeBlock(loc.getBlock())){
+                    if(isSafeBlock(loc.getBlock().getType().toString())){
                         return;
                     }else {
                         if(settings.isNotCheckPastSurface()) break;
@@ -220,13 +219,22 @@ public class Region {
         loc.setY(-9999);
     }
 
-    private boolean isSafeBlock(Block block){
+    /**
+     * Checks if the block is safe according to config criteria.
+     * @param block The block to check.
+     * @return true if the list is a whitelist and the block is contained in the list,
+     * false if the list is a blacklist and the block is contained in the list or the value
+     * of "is non whitelist safe" config field.
+     */
+    private static boolean isSafeBlock(String block) {
         Settings settings = Settings.getInstance();
 
-        if(settings.getBlockBlackList().contains(block.getType().toString())) return false;
-        if(settings.getBlockWhiteList().contains(block.getType().toString())) return true;
+        if(settings.isListIsWhitelist()) {
+            if(settings.getBlockList().contains(block)) return true;
+            return settings.isNonWhiteListSafe();
+        }
+        return !settings.getBlockList().contains(block);
 
-        return settings.isNonWhiteListSafe();
     }
 
 
@@ -243,7 +251,6 @@ public class Region {
         // 3. there is a block air gap above location.
         // 4. block is not in blacklist.
         // 5. block is in whitelist or blocks not in whitelist are safe.
-        Settings settings = Settings.getInstance();
         String blockType = loc.getBlock().getType().toString();
 
         if(loc.getY() < 1 || loc.getY() > 255){
@@ -262,12 +269,8 @@ public class Region {
             Logger.debug("&cThe air gap was not tall enough, or there were none at all.");
             return false;
         }
-        if(settings.getBlockBlackList().contains(blockType)){
-            Logger.debug("&cBlock "+blockType+" is in blacklist.");
-            return false;
-        }
-        if(!settings.getBlockWhiteList().contains(blockType) && !settings.isNonWhiteListSafe()){
-            Logger.debug("&cBlock "+blockType+" is not in whitelist and non-whitelist are non-safe.");
+        if(!isSafeBlock(blockType)){
+            Logger.debug("&cBlock "+blockType+" is not considered safe.");
             return false;
         }
 
@@ -276,6 +279,11 @@ public class Region {
     }
 
 
+    /**
+     * Checks if the given location has the required number of air blocks above.
+     * @param loc The location to check for air gap.
+     * @return True if the location has the necessary amount of air gap above.
+     */
     private static boolean hasAirGap(Location loc){
         int airGap = Settings.getInstance().getAirGapAbove();
 

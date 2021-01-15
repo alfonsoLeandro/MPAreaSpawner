@@ -49,7 +49,7 @@ public class RandomSpawnCache {
      */
     private List<Location> spawnLocations;
     /**
-     * The plugin's main instance.
+     * AreaSpawner's main class instance.
      */
     final private AreaSpawner plugin;
     /**
@@ -69,7 +69,7 @@ public class RandomSpawnCache {
 
     /**
      * Creates a new RandomSpawnCache instance, private for helping on applying Singleton pattern.
-     * @param plugin The main AreaSpawner plugin instance.
+     * @param plugin AreaSpawner's main class instance.
      */
     private RandomSpawnCache(AreaSpawner plugin){
         this.plugin = plugin;
@@ -255,27 +255,6 @@ public class RandomSpawnCache {
             }
 
         }.runTaskTimerAsynchronously(plugin, 5, settings.getTimeBetweenLocations());
-
-//      Previous implementation.
-//        for (;i <= amount; i++) {
-//            ConsoleLogger.debug("&eAttempting to add location number "+i);
-//
-//            Location loc = allowed.generateNewLocation(forbidden);
-//
-//            if(loc == null){
-//                ConsoleLogger.debug("&cFailed to add location number "+i+" after "+settings.getFindSafeLocationAttempts()+" attempts");
-//            }else {
-//                ConsoleLogger.debug("&aLocation number "+i+" successfully added!");
-//                spawnLocations.add(loc);
-//                added++;
-//            }
-//
-//            try {
-//                Thread.sleep(settings.getTimeBetweenLocations());
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 
     /**
@@ -401,7 +380,7 @@ public class RandomSpawnCache {
 
     /**
      * Creates an instance of RandomSpawnCache if none found.
-     * @param plugin The main class instance.
+     * @param plugin AreaSpawner's main class instance.
      */
     public static void createInstance(AreaSpawner plugin){
         if(instance == null){
@@ -410,7 +389,7 @@ public class RandomSpawnCache {
     }
 
     /**
-     * Gets the single instance of this class. {@link RandomSpawnCache#createInstance(AreaSpawner)} should be run first.
+     * Gets the single instance of this class. {@link #createInstance(AreaSpawner)} should be run first.
      * @return An instance of this RandomSpawnCache and the only one in existence.
      */
     public static RandomSpawnCache getInstance(){

@@ -31,6 +31,9 @@ import org.bukkit.configuration.file.FileConfiguration;
  */
 public final class MainCommand implements CommandExecutor {
 
+    /**
+     * AreaSpawner's main class instance.
+     */
     final private AreaSpawner plugin;
     //Translatable messages
     private String noPerm;
@@ -43,7 +46,7 @@ public final class MainCommand implements CommandExecutor {
 
     /**
      * MainCommand class constructor.
-     * @param plugin The main class instance.
+     * @param plugin AreaSpawner's main class instance.
      */
     public MainCommand(AreaSpawner plugin){
         this.plugin = plugin;
