@@ -1,4 +1,4 @@
-name: ${project.name}
+name: MPAreaSpawner
 version: ${project.version}
 main: com.popupmc.areaspawner.AreaSpawner
 api-version: 1.15

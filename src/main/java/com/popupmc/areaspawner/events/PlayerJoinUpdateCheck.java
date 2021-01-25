@@ -23,7 +23,7 @@ public class PlayerJoinUpdateCheck implements Listener {
         if(event.getPlayer().isOp()){
             Player player = event.getPlayer();
             String exclamation = "&e&l(&4&l!&e&l)";
-            String prefix = plugin.getConfig().getString("config.prefix");
+            String prefix = plugin.getConfig().getString("prefix");
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix+" "+exclamation+" &4New version available &7(&e"+plugin.getLatestVersion()+"&7)"));
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix+" "+exclamation+" &ehttp://bit.ly/areaSpawnerUpdate") );
         }
