@@ -147,7 +147,6 @@ public class Region {
         Settings settings = Settings.getInstance();
 
         Location making = new Location(settings.getWorld(), 0, -10, 0);
-
         int attempts = Settings.getInstance().getFindSafeLocationAttempts();
 
         //Make x amount of attempts before giving up and calculating the next one
@@ -191,6 +190,7 @@ public class Region {
                 if(loc.getBlock().getType().equals(Material.VOID_AIR)) continue;
                 if(!loc.getBlock().getType().equals(Material.AIR)) {
                     if(isSafeBlock(loc.getBlock().getType().toString())) {
+                        loc.setY(loc.getBlockY()+1);
                         return;
                     }else {
                         if(settings.isNotCheckPastSurface()) break;
@@ -207,6 +207,7 @@ public class Region {
                 //If the block is not air and the block above is air
                 if(!loc.getBlock().getType().equals(Material.AIR) && loc.getBlock().getRelative(BlockFace.UP).getType().equals(Material.AIR)) {
                     if(isSafeBlock(loc.getBlock().getType().toString())){
+                        loc.setY(loc.getBlockY()+1);
                         return;
                     }else {
                         if(settings.isNotCheckPastSurface()) break;
@@ -223,17 +224,47 @@ public class Region {
      * Checks if the block is safe according to config criteria.
      * @param block The block to check.
      * @return true if the list is a whitelist and the block is contained in the list,
-     * false if the list is a blacklist and the block is contained in the list or the value
-     * of "is non whitelist safe" config field.
+     * false if the list is a blacklist and the block is contained in the list or the list is
+     * a whitelist and the block is not contained in the list.
      */
     private static boolean isSafeBlock(String block) {
         Settings settings = Settings.getInstance();
 
-        if(settings.isListIsWhitelist()) {
-            if(settings.getBlockList().contains(block)) return true;
-            return settings.isNonWhiteListSafe();
-        }
+        if(settings.isListIsWhitelist()) return settings.getBlockList().contains(block);
+
         return !settings.getBlockList().contains(block);
+
+    }
+
+
+    public Region chooseRandomQuadrant(){
+        int quadrant = new Random().nextInt(4);
+
+        int xCenter = (this.minX+this.maxX)/2;
+        int zCenter = (this.minZ+this.maxZ)/2;
+
+        if(quadrant == 0){
+            Logger.debug("The first quadrant is the chosen quadrant");
+            return new Region(xCenter, this.maxX,
+                    this.minY,this.maxY,
+                    this.minZ , zCenter);
+
+        }else if(quadrant == 1){
+            Logger.debug("The second quadrant is the chosen quadrant");
+            return new Region(xCenter, this.maxX,
+                    this.minY, this.maxY,
+                    zCenter, this.maxZ);
+
+        }else if(quadrant == 2){
+            Logger.debug("The third quadrant is the chosen quadrant");
+            return new Region( this.minX, xCenter,
+                    this.minY, this.maxY,
+                    this.minZ, zCenter);
+        }
+        Logger.debug("The fourth quadrant is the chosen quadrant");
+        return new Region(this.minX, xCenter,
+                this.minY, this.maxY,
+                zCenter, this.maxZ);
 
     }
 

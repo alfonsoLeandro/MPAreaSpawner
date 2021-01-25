@@ -17,6 +17,7 @@ messages:
   regenerating: '&fRegenerating every spawn location for every world in config...'
   number of locations: '&fThere are currently &c%locations% &flocations stored in cache.'
   you have been teleported: '&aYou have been teleported to a new random location.'
+  teleported to home: '&aYou have been teleported to your essentials home.'
   travel disabled: '&cThat feature is disabled.'
   still in cooldown: '&cYou are still on cooldown for using this feature. Time left: %time%'
   not enough money: '&cYou don''t have enough money, you need %amount%'

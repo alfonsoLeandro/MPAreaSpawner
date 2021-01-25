@@ -11,9 +11,6 @@
 # using "/as regenerate" for applying changes.
 ###############################################
 
-#Internal use only. Do not touch this.
-config version: 1
-
 ###############
 #   General   #
 ###############
@@ -52,10 +49,9 @@ spawn zone:
 
 # The no spawn zone can be disabled. These are the zones where players
 # cannot spawn in. They should be smaller than the spawn zones and be inside them.
+# The spawn zone x center and z center coordinates are used for the no spawn zone x and z coordinates.
 no spawn zone:
   enabled: true
-  x center: 0
-  z center: 0
   x range: 8_000_000
   z range: 8_000_000
 

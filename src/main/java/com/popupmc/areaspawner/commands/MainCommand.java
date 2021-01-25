@@ -18,10 +18,17 @@ package com.popupmc.areaspawner.commands;
 import com.popupmc.areaspawner.AreaSpawner;
 import com.popupmc.areaspawner.spawn.RandomSpawnCache;
 import com.popupmc.areaspawner.utils.Logger;
+import com.popupmc.areaspawner.utils.Settings;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -35,6 +42,7 @@ public final class MainCommand implements CommandExecutor {
      * AreaSpawner's main class instance.
      */
     final private AreaSpawner plugin;
+    private String configFieldsHash;
     //Translatable messages
     private String noPerm;
     private String unknown;
@@ -51,6 +59,7 @@ public final class MainCommand implements CommandExecutor {
     public MainCommand(AreaSpawner plugin){
         this.plugin = plugin;
         loadMessages();
+        configFieldsHash = getMDHash();
     }
 
     /**
@@ -102,6 +111,11 @@ public final class MainCommand implements CommandExecutor {
             plugin.reload();
             loadMessages();
             Logger.send(sender, reloaded);
+            if(Settings.getInstance().isCacheEnabled() && !getMDHash().equals(this.configFieldsHash)){
+                Logger.send(sender, "&cChanges in location/cache detected. Regenerating cached locations.");
+                RandomSpawnCache.getInstance().createSafeSpawns(true);
+                this.configFieldsHash = getMDHash();
+            }
 
 
 
@@ -148,5 +162,33 @@ public final class MainCommand implements CommandExecutor {
 
 
         return true;
+    }
+
+
+    /**
+     * Gets a string that corresponds to the MD5 hash of a group of config fields.
+     * @return The MD5 hash string value that represents the given group of config fields.
+     */
+    private String getMDHash(){
+        StringBuilder result = new StringBuilder();
+        String[] keys = {"spawn world", "spawn zone.clamp to limits", "spawn zone.default to multiverse", "spawn zone.x center", "spawn zone.y center", "spawn zone.z center", "spawn zone.x range", "spawn zone.y range", "spawn zone.z range", "no spawn zone.enabled", "no spawn zone.x range", "no spawn zone.z range", "amount of cached spawns"};
+
+        for (String key : keys){
+            result.append(plugin.getConfig().get(key));
+        }
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(result.toString().getBytes());
+            byte[] bytes = md.digest();
+            StringBuilder toString = new StringBuilder();
+            for(byte b : bytes){
+                toString.append(Integer.toHexString(b & 0xff));
+            }
+            return toString.toString();
+
+        }catch (NoSuchAlgorithmException e){
+            return "";
+        }
     }
 }

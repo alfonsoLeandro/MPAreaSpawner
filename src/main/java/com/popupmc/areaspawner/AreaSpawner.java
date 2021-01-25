@@ -33,13 +33,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -84,6 +87,7 @@ public final class AreaSpawner extends JavaPlugin {
         send("&fJoin my discord server at &chttps://discordapp.com/invite/ZznhQud");
         send("Please consider subscribing to my yt channel: &c" + pdfFile.getWebsite());
         reloadFiles();
+        checkFilesFields();
         Settings.createInstance(this);
         checkDangerousSettings();
         RandomSpawnCache.createInstance(this);
@@ -110,7 +114,7 @@ public final class AreaSpawner extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        RandomSpawnCache.getInstance().saveToFile();
+        if(RandomSpawnCache.getInstance() != null) RandomSpawnCache.getInstance().saveToFile();
         send("&cDisabled&f. Version: &e" + version);
         send("&fThank you for using my plugin! &" + color + pdfFile.getName() + "&f By " + pdfFile.getAuthors().get(0));
         send("&fJoin my discord server at &chttps://discordapp.com/invite/ZznhQud");
@@ -127,7 +131,7 @@ public final class AreaSpawner extends JavaPlugin {
             return false;
         }
         econ = rsp.getProvider();
-        return econ != null;
+        return true;
     }
 
     public boolean setupPermissions() {
@@ -140,7 +144,7 @@ public final class AreaSpawner extends JavaPlugin {
             return false;
         }
         perms = rsp.getProvider();
-        return perms != null;
+        return true;
     }
 
 
@@ -204,6 +208,16 @@ public final class AreaSpawner extends JavaPlugin {
     }
 
 
+    private void checkFilesFields(){
+        FileConfiguration messagesEndFile = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "messages.yml"));
+        FileConfiguration messages = getConfig();
+
+        if(!messagesEndFile.contains("messages.teleported to home")) {
+            messages.set("messages.teleported to home", "&aYou have been teleported to your essentials home.");
+            messagesYaml.save();
+        }
+    }
+
     /**
      * Registers the event listeners.
      */
@@ -245,13 +259,13 @@ public final class AreaSpawner extends JavaPlugin {
 
         if(fields.getWorldName() == null || fields.getWorld() == null){
             send("&cERROR &f- World is null, please check your world name in config");
-            send("&fDisabling AreaSpawner");
+            send("&fDisabling AreaSpawner...");
             setEnabled(false);
             return;
         }
         if(fields.getForbiddenRegion().contains(fields.getAllowedRegion())){
             send("&cERROR &f- The safe region spawn is inside and smaller than the forbidden region spawn");
-            send("&fDisabling AreaSpawner");
+            send("&fDisabling AreaSpawner...");
             setEnabled(false);
             return;
         }
@@ -292,7 +306,7 @@ public final class AreaSpawner extends JavaPlugin {
      * @return The config FileConfiguration inside the config YamlFile object.
      */
     @Override
-    public FileConfiguration getConfig(){
+    public @NotNull FileConfiguration getConfig(){
         return getConfigYaml().getAccess();
     }
 

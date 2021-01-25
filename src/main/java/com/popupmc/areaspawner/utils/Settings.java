@@ -48,7 +48,6 @@ public class Settings {
     private boolean cacheEnabled;
     private boolean saveCacheToFile;
     private boolean topToBottom;
-    private boolean nonWhiteListSafe;
     private boolean checkPastSurface;
     private boolean checkSafetyOnUse;
     private boolean deleteOnUnsafe;
@@ -98,7 +97,6 @@ public class Settings {
         this.cacheEnabled = config.getBoolean("enable cache");
         this.saveCacheToFile = config.getBoolean("save cache to file");
         this.topToBottom = config.getBoolean("top to bottom");
-        this.nonWhiteListSafe = config.getBoolean("non-list are safe");
         this.checkPastSurface = config.getBoolean("check past surface");
         this.checkSafetyOnUse = config.getBoolean("re-check for safety on use");
         this.deleteOnUnsafe = config.getBoolean("delete location on unsafe");
@@ -215,8 +213,8 @@ public class Settings {
 
         boolean enabled = config.getBoolean("no spawn zone.enabled");
 
-        int xCenter = enabled ? config.getInt("no spawn zone.x center"): 0;
-        int zCenter = enabled ? config.getInt("no spawn zone.z center"): 0;
+        int xCenter = enabled ? config.getInt("spawn zone.x center"): 0;
+        int zCenter = enabled ? config.getInt("spawn zone.z center"): 0;
 
         int xRange = enabled ? config.getInt("no spawn zone.x range") : 0;
         int zRange = enabled ? config.getInt("no spawn zone.z range") : 0;
@@ -248,10 +246,6 @@ public class Settings {
 
     public boolean isTopToBottom(){
         return topToBottom;
-    }
-
-    public boolean isNonWhiteListSafe(){
-        return nonWhiteListSafe;
     }
 
     public boolean isNotCheckPastSurface(){
