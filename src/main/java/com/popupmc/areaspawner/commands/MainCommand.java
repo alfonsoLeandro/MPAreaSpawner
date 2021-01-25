@@ -85,12 +85,11 @@ public final class MainCommand implements CommandExecutor {
                 Logger.send(sender, noPerm);
                 return true;
             }
-//            TODO: updateChecker
-//            if(!plugin.getVersion().equals(plugin.getLatestVersion())){
-//                Logger.send("&fVersion: &e"+plugin.getVersion()+"&f. &cUpdate available!");
-//                Logger.send("&fDownload here: http://bit.ly/2Pl4Rg7");
-//                return true;
-//            }
+            if(!plugin.getVersion().equals(plugin.getLatestVersion())){
+                Logger.send("&fVersion: &e"+plugin.getVersion()+"&f. &cUpdate available!");
+                Logger.send("&fDownload here: http://bit.ly/areaSpawnerUpdate");
+                return true;
+            }
             Logger.send(sender,"&fVersion: &e" + plugin.getVersion() + "&f. &aUp to date!");
 
 

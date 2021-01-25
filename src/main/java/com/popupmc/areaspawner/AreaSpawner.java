@@ -21,6 +21,7 @@ import com.popupmc.areaspawner.commands.TravelCommand;
 import com.popupmc.areaspawner.commands.TravelCommandTabAutoCompleter;
 import com.popupmc.areaspawner.events.FirstJoinEvent;
 import com.popupmc.areaspawner.events.PlayerDieEvent;
+import com.popupmc.areaspawner.events.PlayerJoinUpdateCheck;
 import com.popupmc.areaspawner.spawn.RandomSpawnCache;
 import com.popupmc.areaspawner.utils.Logger;
 import com.popupmc.areaspawner.utils.Settings;
@@ -38,6 +39,11 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 /**
  * AreaSpawner main class. In charge of registering any plugin-server interaction.
  *
@@ -47,7 +53,7 @@ public final class AreaSpawner extends JavaPlugin {
 
     final private PluginDescriptionFile pdfFile = getDescription();
     final private String version = pdfFile.getVersion();
-    //    private String latestVersion; TODO
+    private String latestVersion;
     final private char color = 'e';
     final private String name = "&f[&" + color + pdfFile.getName() + "&f]";
     private TravelCommand travelCommand;
@@ -96,7 +102,7 @@ public final class AreaSpawner extends JavaPlugin {
         }
         registerEvents();
         registerCommands();
-        //updateChecker();
+        updateChecker();
     }
 
     /**
@@ -137,27 +143,26 @@ public final class AreaSpawner extends JavaPlugin {
         return perms != null;
     }
 
-//TODO: Update checker
-//
-//    private void updateChecker(){
-//        try {
-//            HttpURLConnection con = (HttpURLConnection) new URL(
-//                    "https://api.spigotmc.org/legacy/update.php?resource=71422").openConnection();
-//            final int timed_out = 1250;
-//            con.setConnectTimeout(timed_out);
-//            con.setReadTimeout(timed_out);
-//            latestVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
-//            if (latestVersion.length() <= 7) {
-//                if(!version.equals(latestVersion)){
-//                    String exclamation = "&e&l(&4&l!&e&l)";
-//                    send(exclamation +" &cThere is a new version available. &e(&7"+latestVersion+"&e)");
-//                    send(exclamation +" &cDownload it here: &fhttp://bit.ly/2Pl4Rg7");
-//                }
-//            }
-//        } catch (Exception ex) {
-//            send("&cThere was an error while checking for updates");
-//        }
-//    }
+
+    private void updateChecker(){
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL(
+                    "https://api.spigotmc.org/legacy/update.php?resource=88263").openConnection();
+            final int timed_out = 1250;
+            con.setConnectTimeout(timed_out);
+            con.setReadTimeout(timed_out);
+            latestVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
+            if (latestVersion.length() <= 7) {
+                if(!version.equals(latestVersion)){
+                    String exclamation = "&e&l(&4&l!&e&l)";
+                    send(exclamation +" &cThere is a new version available. &e(&7"+latestVersion+"&e)");
+                    send(exclamation +" &cDownload it here: &fhttp://bit.ly/areaSpawnerUpdate");
+                }
+            }
+        } catch (Exception ex) {
+            send("&cThere was an error while checking for updates");
+        }
+    }
 
 
     /**
@@ -168,14 +173,13 @@ public final class AreaSpawner extends JavaPlugin {
         return this.version;
     }
 
-//    /**
-//     * Gets the latest version available from spigot.
-//     * @return The latest version or null.
-//     */
-//    public String getLatestVersion() {
-//        return this.latestVersion;
-//    }
-
+    /**
+     * Gets the latest version available from spigot.
+     * @return The latest version or null.
+     */
+    public String getLatestVersion() {
+        return this.latestVersion;
+    }
 
 
     /**
@@ -188,6 +192,9 @@ public final class AreaSpawner extends JavaPlugin {
         cooldownYaml = new YamlFile(this, "travel cooldown.yml");
     }
 
+    /**
+     * Re-loads the plugin.
+     */
     public void reload(){
         reloadFiles();
         Settings.getInstance().reloadFields();
@@ -204,6 +211,7 @@ public final class AreaSpawner extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new FirstJoinEvent(this), this);
         pm.registerEvents(new PlayerDieEvent(this), this);
+        pm.registerEvents(new PlayerJoinUpdateCheck(this), this);
     }
 
 
