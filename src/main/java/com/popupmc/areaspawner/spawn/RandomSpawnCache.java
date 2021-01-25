@@ -30,6 +30,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Creates new random spawn points with config parameters, saves these spawn locations
@@ -52,15 +53,15 @@ public class RandomSpawnCache {
      * AreaSpawner's main class instance.
      */
     final private AreaSpawner plugin;
-    /**
-     * The runnable that will create a single location.
-     */
-    final private BukkitRunnable createNewSingleLocationAsync = new BukkitRunnable() {
-        @Override
-        public void run() {
-            replaceLocation();
-        }
-    };
+//    /**
+//     * The runnable that will create a single location.
+//     */
+//    final private BukkitRunnable createNewSingleLocationAsync = new BukkitRunnable() {
+//        @Override
+//        public void run() {
+//            replaceLocation();
+//        }
+//    };
     /**
      * The cache task used for cancelling said task.
      */
@@ -201,7 +202,8 @@ public class RandomSpawnCache {
         Logger.debug("&aLocation successfully removed from the locations list");
         if(settings.isReplaceRemovedLocation()){
             Logger.debug("&eCreating a new location in replacement.");
-            createNewSingleLocationAsync.runTaskAsynchronously(plugin);
+            CompletableFuture.runAsync(this::replaceLocation);
+//            createNewSingleLocationAsync.runTaskAsynchronously(plugin);
         }
 
     }

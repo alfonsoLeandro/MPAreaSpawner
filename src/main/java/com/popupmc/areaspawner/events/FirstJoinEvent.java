@@ -8,13 +8,14 @@ import com.popupmc.areaspawner.utils.Settings;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 /**
- * Listener class for listening to {@link PlayerJoinEvent} to look for players that join for the first time.
+ * Listener class for listening to {@link PlayerSpawnLocationEvent} to look for players that join for the first time.
  *
  * @author lelesape
  */
@@ -29,8 +30,9 @@ public class FirstJoinEvent implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event){
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void onJoin(PlayerSpawnLocationEvent event){
         Settings settings = Settings.getInstance();
         Player player = event.getPlayer();
 
@@ -39,7 +41,11 @@ public class FirstJoinEvent implements Listener {
             if(settings.isNotUseAutomaticPermission() || player.hasPermission("areaSpawner.automatic")){
                 //Teleport.
                 Location location = RandomSpawnCache.getInstance().getSafeSpawn();
-                player.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+                new BukkitRunnable(){
+                    public void run(){
+                        player.teleport(location);
+                    }
+                }.runTaskLater(plugin, 5);
 
                 Logger.send(player, plugin.getMessagesYaml().getAccess().getString("messages.you have been teleported"));
                 Logger.debug("&e"+player.getName()+" has joined for the first time and has been teleported to a new random location.");
