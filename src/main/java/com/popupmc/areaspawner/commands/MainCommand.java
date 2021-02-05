@@ -148,10 +148,10 @@ public final class MainCommand implements CommandExecutor {
             int locations = rsp.getLocationsInCache();
 
             if(rsp.stopCache()){
-                Logger.send(sender, "&aThe cache process has been successfully stopped.");
+                Logger.send(sender, "&aThe cache process will be stopped when it is finished with the current location");
                 Logger.send(sender, "&eThere are currently "+locations+" locations saved in cache.");
             }else{
-                Logger.send(sender, "&cThe cache process was not running.");
+                Logger.send(sender, "&cThe cache process was not running or it is already stopping.");
             }
 
             //unknown command

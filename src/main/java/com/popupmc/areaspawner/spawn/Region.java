@@ -164,7 +164,7 @@ public class Region {
 
 
             try {
-                Thread.sleep(800);
+                Thread.sleep(settings.getTimeBetweenLocationAttempts()* 50L);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

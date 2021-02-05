@@ -66,6 +66,7 @@ public class Settings {
     private int findSafeLocationAttempts;
     private int airGapAbove;
     private int timeBetweenLocations;
+    private int timeBetweenAttempts;
     private int travelCooldown;
     private String prefix;
     private String worldName;
@@ -116,11 +117,17 @@ public class Settings {
         this.findSafeLocationAttempts = config.getInt("safe spawn attempts");
         this.cachedLocationsAmount = config.getInt("amount of cached spawns");
         this.airGapAbove = config.getInt("air gap above");
-        String timeString = config.getString("time between generating locations");
-        if(timeString != null && timeString.length() > 1) {
-            this.timeBetweenLocations = TimeUnit.getTicks(Integer.parseInt(timeString.substring(0, timeString.length() - 1)), timeString.charAt(timeString.length() - 1));
+        String timeBLString = config.getString("time between generating locations");
+        if(timeBLString != null && timeBLString.length() > 1) {
+            this.timeBetweenLocations = TimeUnit.getTicks(Integer.parseInt(timeBLString.substring(0, timeBLString.length() - 1)), timeBLString.charAt(timeBLString.length() - 1));
         }else{
             this.timeBetweenLocations = TimeUnit.getTicks(3, TimeUnit.SECONDS);
+        }
+        String timeBAString = config.getString("time between location attempts");
+        if(timeBAString != null && timeBAString.length() > 1) {
+            this.timeBetweenAttempts = TimeUnit.getTicks(Integer.parseInt(timeBAString.substring(0, timeBAString.length() - 1)), timeBAString.charAt(timeBAString.length() - 1));
+        }else{
+            this.timeBetweenAttempts = TimeUnit.getTicks(5, TimeUnit.TICKS);
         }
         String cooldownString = config.getString("travel cooldown");
         if(cooldownString != null && cooldownString.length() > 1) {
@@ -318,6 +325,10 @@ public class Settings {
 
     public int getTimeBetweenLocations(){
         return timeBetweenLocations;
+    }
+
+    public int getTimeBetweenLocationAttempts(){
+        return timeBetweenAttempts;
     }
 
     public int getTravelCooldown(){

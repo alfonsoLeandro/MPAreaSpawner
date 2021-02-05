@@ -6,9 +6,6 @@
 # If you find this plugin useful remember to review it on spigot. ANY suggestions will
 # be heard, make sure to leave them either on the spigot plugin page, the github page for
 # this project or lelesape(MasterPlugins)'s plugin support discord server: https://bit.ly/MPDiscordSv
-#
-# When modifying spawn settings, make sure to regenerate spawn locations
-# using "/as regenerate" for applying changes.
 ###############################################
 
 ###############
@@ -87,10 +84,6 @@ block list:
 # Should the list above contain blocks that should be considered safe?
 list is whitelist: false
 
-# Are block that aren't found in the whitelist safe?
-# If "list is whitelist" is set to true, are blocks not found in the list considered safe?
-non-list are safe: true
-
 # The amount of air block needed for a location to be seen as safe.
 # Default: 2 (recommended).
 air gap above: 2
@@ -158,10 +151,16 @@ enable cache: true
 save cache to file: true
 
 # The amount of time to wait in between locations when generating locations for the cache.
-# S -> Seconds; M -> Minutes; H -> Hours; D -> Days.
-# If the unit is not S,M,H or D, it will count as S (seconds).
+# T -> Ticks; S -> Seconds; M -> Minutes; H -> Hours; D -> Days.
+# If the unit is not T,S,M,H or D, it will count as S (seconds).
 # Any other incorrect input will be detected as 3S (3 seconds).
-time between generating locations: 5S
+time between generating locations: 3S
+
+# The amount of time to wait in between each attempt to generate a single location.
+# T -> Ticks; S -> Seconds; M -> Minutes; H -> Hours; D -> Days.
+# If the unit is not T,S,M,H or D, it will count as T (ticks).
+# Any other incorrect input will be detected as 5T (5 ticks).
+time between location attempts: 5T
 
 # Number of spawns to calculate and save in the cache.
 # The amount of spawns should not affect your server performance since spawn calculation is made async.

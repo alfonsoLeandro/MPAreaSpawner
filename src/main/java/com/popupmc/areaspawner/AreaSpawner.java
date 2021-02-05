@@ -210,12 +210,21 @@ public final class AreaSpawner extends JavaPlugin {
 
     private void checkFilesFields(){
         FileConfiguration messagesEndFile = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "messages.yml"));
-        FileConfiguration messages = getConfig();
+        FileConfiguration messages = getMessagesYaml().getAccess();
 
         if(!messagesEndFile.contains("messages.teleported to home")) {
             messages.set("messages.teleported to home", "&aYou have been teleported to your essentials home.");
             messagesYaml.save();
         }
+
+        FileConfiguration configEndFile = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
+        FileConfiguration config = getConfigYaml().getAccess();
+
+        if(!configEndFile.contains("time between location attempts")){
+            config.set("time between location attempts", "5T");
+            configYaml.save();
+        }
+
     }
 
     /**

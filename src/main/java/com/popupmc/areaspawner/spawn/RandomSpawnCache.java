@@ -53,19 +53,14 @@ public class RandomSpawnCache {
      * AreaSpawner's main class instance.
      */
     final private AreaSpawner plugin;
-//    /**
-//     * The runnable that will create a single location.
-//     */
-//    final private BukkitRunnable createNewSingleLocationAsync = new BukkitRunnable() {
-//        @Override
-//        public void run() {
-//            replaceLocation();
-//        }
-//    };
     /**
      * The cache task used for cancelling said task.
      */
     private BukkitTask cacheGeneratorTask;
+    /**
+     * A boolean used for stopping the cache process.
+     */
+    private boolean stopCache = false;
 
 
     /**
@@ -99,8 +94,9 @@ public class RandomSpawnCache {
      * @return true if the cache was successfully stopped.
      */
     public boolean stopCache(){
-        if(cacheGeneratorTask == null || cacheGeneratorTask.isCancelled()) return false;
+        if(cacheGeneratorTask == null || cacheGeneratorTask.isCancelled() || stopCache) return false;
         cacheGeneratorTask.cancel();
+        stopCache = true;
         return true;
     }
 
@@ -203,12 +199,60 @@ public class RandomSpawnCache {
         if(settings.isReplaceRemovedLocation()){
             Logger.debug("&eCreating a new location in replacement.");
             CompletableFuture.runAsync(this::replaceLocation);
-//            createNewSingleLocationAsync.runTaskAsynchronously(plugin);
         }
 
     }
 
 
+//    /**
+//     * Creates as many safe spawn locations as specified in config and adds them to
+//     * the list of locations.
+//     */
+//    public void createSafeLocations(){
+//        Settings settings = Settings.getInstance();
+//
+//        if(!settings.isCacheEnabled()){
+//            Logger.send("&eWARNING &f- Location cache is disabled. Locations will be calculated on the spot, players may take a while to respawn depending on your other settings.");
+//            return;
+//        }
+//
+//        Logger.send("&eCreating safe locations...");
+//
+//        final Region allowed = settings.getAllowedRegion();
+//        final Region forbidden = settings.getForbiddenRegion();
+//        final int amountOfLocationsToAdd = settings.getCachedLocationsAmount();
+//        final int[] locationNumber = {spawnLocations.size()};
+//        final int[] addedLocations = {0, 0};
+//
+//
+//        cacheGeneratorTask = new BukkitRunnable(){
+//
+//            @Override
+//            public void run(){
+//                locationNumber[0]++;
+//                if(locationNumber[0] > amountOfLocationsToAdd){
+//                    showAddedLocations(addedLocations[0], addedLocations[1]);
+//                    cancel();
+//                    return;
+//                }
+//
+//                Logger.debug("&eAttempting to add location number "+ locationNumber[0]);
+//
+//                Location loc = allowed.chooseRandomQuadrant().generateNewLocation(forbidden);
+//
+//                if(loc == null){
+//                    Logger.debug("&cFailed to add location number "+ locationNumber[0] +" after "+settings.getFindSafeLocationAttempts()+" attempts");
+//                    addedLocations[1]++;
+//                }else {
+//                    Logger.debug("&aLocation number "+ locationNumber[0] +" successfully added!");
+//                    spawnLocations.add(loc);
+//                    addedLocations[0]++;
+//                }
+//
+//            }
+//
+//        }.runTaskTimerAsynchronously(plugin, 5, settings.getTimeBetweenLocations());
+//    }
     /**
      * Creates as many safe spawn locations as specified in config and adds them to
      * the list of locations.
@@ -223,23 +267,22 @@ public class RandomSpawnCache {
 
         Logger.send("&eCreating safe locations...");
 
-        final Region allowed = settings.getAllowedRegion();
-        final Region forbidden = settings.getForbiddenRegion();
-        final int amountOfLocationsToAdd = settings.getCachedLocationsAmount();
+        Region allowed = settings.getAllowedRegion();
+        Region forbidden = settings.getForbiddenRegion();
+        int amountOfLocationsToAdd = settings.getCachedLocationsAmount();
+        final int[] run = {0};
         final int[] locationNumber = {spawnLocations.size()};
-        final int[] addedLocations = {0, 0};
+        int[] addedLocations = {0, 0};
 
 
         cacheGeneratorTask = new BukkitRunnable(){
 
             @Override
             public void run(){
+                Logger.debug("Run number "+ run[0]);
+                run[0]++;
+
                 locationNumber[0]++;
-                if(locationNumber[0] > amountOfLocationsToAdd){
-                    showAddedLocations(addedLocations[0], addedLocations[1]);
-                    cancel();
-                    return;
-                }
 
                 Logger.debug("&eAttempting to add location number "+ locationNumber[0]);
 
@@ -254,9 +297,22 @@ public class RandomSpawnCache {
                     addedLocations[0]++;
                 }
 
+
+
+                if(locationNumber[0] > amountOfLocationsToAdd || stopCache){
+                    showAddedLocations(addedLocations[0], addedLocations[1]);
+                    stopCache = false;
+                }else{
+                    try {
+                        Thread.sleep(settings.getTimeBetweenLocations()*50L);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    run();
+                }
             }
 
-        }.runTaskTimerAsynchronously(plugin, 5, settings.getTimeBetweenLocations());
+        }.runTaskAsynchronously(plugin);
     }
 
     /**
@@ -324,7 +380,7 @@ public class RandomSpawnCache {
 
             if(cache.contains("cache-settings-hash")){
                 String hash = getMDHash(locations);
-                if(hash != null && !cache.getString("cache-settings-hash").equals(hash)){
+                if(hash != null && !hash.equals(cache.getString("cache-settings-hash"))){
                     Logger.send("&cThe cache file has been modified. Invalidating cache.");
                     Logger.send("&eCreating new locations...");
                     return;

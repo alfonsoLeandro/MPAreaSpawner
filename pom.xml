@@ -6,7 +6,7 @@
 
     <groupId>com.popupmc.areaSpawner</groupId>
     <artifactId>MPAreaSpawner</artifactId>
-    <version>0.9.2</version>
+    <version>0.9.3</version>
     <packaging>jar</packaging>
 
     <name>MPAreaSpawner</name>

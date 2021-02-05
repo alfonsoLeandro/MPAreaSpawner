@@ -20,7 +20,7 @@ public class PlayerJoinUpdateCheck implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event){
-        if(event.getPlayer().isOp()){
+        if(event.getPlayer().isOp() && plugin.getLatestVersion() != null && !plugin.getVersion().equals(plugin.getLatestVersion())){
             Player player = event.getPlayer();
             String exclamation = "&e&l(&4&l!&e&l)";
             String prefix = plugin.getConfig().getString("prefix");

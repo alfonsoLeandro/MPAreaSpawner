@@ -30,6 +30,10 @@ import java.util.List;
 public enum TimeUnit {
 
     /**
+     * Minecraft ticks, the smallest time unit in this class.
+     */
+    TICKS(1),
+    /**
      * Seconds, conformed by 20 ticks.
      */
     SECONDS( 20),
@@ -76,6 +80,9 @@ public enum TimeUnit {
      */
     public static TimeUnit getByAlias(char alias){
         switch (alias){
+            case 't':
+            case 'T':
+                return TICKS;
             case 'm':
             case 'M':
                 return MINUTES;
