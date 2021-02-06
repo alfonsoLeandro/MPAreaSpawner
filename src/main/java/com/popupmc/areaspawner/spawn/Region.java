@@ -236,8 +236,11 @@ public class Region {
 
     }
 
-
-    public Region chooseRandomQuadrant(){
+    /**
+     * Chooses a random region from the 4 regions that result from splitting this region in 4 equal pieces.
+     * @return A new region contained in this region.
+     */
+    public Region getRandomQuadrant(){
         int quadrant = new Random().nextInt(4);
 
         int xCenter = (this.minX+this.maxX)/2;
@@ -265,6 +268,44 @@ public class Region {
         return new Region(this.minX, xCenter,
                 this.minY, this.maxY,
                 zCenter, this.maxZ);
+
+    }
+
+    /**
+     * Chooses a random region from the 4 regions that result from splitting this region in 4 strips.
+     * These strips are limited by the spawn zone max coordinates and the no spawn zone max coordinates.
+     * @return A new region contained in the spawn region but outside the no spawn zone.
+     */
+    public Region getRandomStrip() {
+        Region forbidden = Settings.getInstance().getForbiddenRegion();
+
+        int strip = new Random().nextInt(4);
+
+        if(strip == 0){
+            Logger.debug("The upper strip is the chosen strip");
+            return new Region(forbidden.getMaxX(), this.getMaxX(),
+                    this.getMinY(), this.getMaxY(),
+                    this.getMinZ(), forbidden.getMaxZ());
+
+        }else if(strip == 1){
+            Logger.debug("The right side strip is the chosen strip");
+            return new Region(this.getMinX(), this.getMaxX(),
+                    this.getMinY(), this.getMaxY(),
+                    forbidden.getMaxZ(), this.getMaxZ());
+
+        }else if(strip == 2){
+            Logger.debug("The lower strip is the chosen strip");
+            return new Region(this.getMinX(), forbidden.getMinX(),
+                    this.getMinY(), this.getMaxY(),
+                    this.getMinZ(), this.getMaxZ());
+        }
+        Logger.debug("The left side strip is the chosen strip");
+        return new Region(this.getMinX(), this.getMaxX(),
+                this.getMinY(), this.getMaxY(),
+                this.getMinZ(), forbidden.getMaxZ());
+
+
+
 
     }
 

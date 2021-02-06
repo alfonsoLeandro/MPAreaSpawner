@@ -142,7 +142,7 @@ public class RandomSpawnCache {
             return location.clone().add(0.5,1,0.5);
         }
 
-        return settings.getAllowedRegion().chooseRandomQuadrant().generateNewLocation(settings.getForbiddenRegion());
+        return settings.getAllowedRegion().getRandomStrip().generateNewLocation(settings.getForbiddenRegion());
 
 
     }
@@ -157,7 +157,7 @@ public class RandomSpawnCache {
         Region allowed = settings.getAllowedRegion();
         Region forbidden = settings.getForbiddenRegion();
 
-        Location loc = allowed.chooseRandomQuadrant().generateNewLocation(forbidden);
+        Location loc = allowed.getRandomStrip().generateNewLocation(forbidden);
 
         if(loc == null){
             Logger.debug("&cFailed to add replacement location after "+settings.getFindSafeLocationAttempts()+" attempts");
@@ -270,7 +270,6 @@ public class RandomSpawnCache {
         Region allowed = settings.getAllowedRegion();
         Region forbidden = settings.getForbiddenRegion();
         int amountOfLocationsToAdd = settings.getCachedLocationsAmount();
-        final int[] run = {0};
         final int[] locationNumber = {spawnLocations.size()};
         int[] addedLocations = {0, 0};
 
@@ -279,14 +278,11 @@ public class RandomSpawnCache {
 
             @Override
             public void run(){
-                Logger.debug("Run number "+ run[0]);
-                run[0]++;
-
                 locationNumber[0]++;
 
                 Logger.debug("&eAttempting to add location number "+ locationNumber[0]);
 
-                Location loc = allowed.chooseRandomQuadrant().generateNewLocation(forbidden);
+                Location loc = allowed.getRandomStrip().generateNewLocation(forbidden);
 
                 if(loc == null){
                     Logger.debug("&cFailed to add location number "+ locationNumber[0] +" after "+settings.getFindSafeLocationAttempts()+" attempts");
